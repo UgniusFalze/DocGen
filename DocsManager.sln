@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocsManager", "DocsManager\DocsManager.csproj", "{7B4A2595-5F53-421C-8D91-66CC5E870C82}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocsManagerTest", "DocsManagerTest\DocsManagerTest.csproj", "{80F9528B-CEBB-4C12-978C-5C6276098373}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{7B4A2595-5F53-421C-8D91-66CC5E870C82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B4A2595-5F53-421C-8D91-66CC5E870C82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B4A2595-5F53-421C-8D91-66CC5E870C82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80F9528B-CEBB-4C12-978C-5C6276098373}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80F9528B-CEBB-4C12-978C-5C6276098373}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80F9528B-CEBB-4C12-978C-5C6276098373}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80F9528B-CEBB-4C12-978C-5C6276098373}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
