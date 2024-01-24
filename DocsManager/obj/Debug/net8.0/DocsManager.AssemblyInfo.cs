@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DocsManager")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+650ea29e85b482c909606f6f2dc403ec6546845b")]
 [assembly: System.Reflection.AssemblyProductAttribute("DocsManager")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DocsManager")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
