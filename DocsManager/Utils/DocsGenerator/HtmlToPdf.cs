@@ -2,9 +2,9 @@ using PuppeteerSharp;
 
 namespace DocsManager.Utils.DocsGenerator;
 
-public class HtmlToPdf
+public class HtmlToPdf:IPdfGenerator
 {
-    public static async Task<byte[]> GeneratePdf(string html)
+    public async Task<byte[]> GeneratePdf(string html)
     {
         using var browserFetcher = new BrowserFetcher();
         await browserFetcher.DownloadAsync();
@@ -12,10 +12,8 @@ public class HtmlToPdf
         {
             Headless = true
         });
-        using (var page = await browser.NewPageAsync())
-        {
-            await page.SetContentAsync(html);
-            return await page.PdfDataAsync();
-        }
+        await using var page = await browser.NewPageAsync();
+        await page.SetContentAsync(html);
+        return await page.PdfDataAsync();
     }
 }

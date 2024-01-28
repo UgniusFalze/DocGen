@@ -19,8 +19,8 @@ public class Tests
     public async Task<string> Test_Correctly_Renders_Html_With_Variables()
     {
         var testModel = new Model("Mark");
-        var template = new Template<Model>("<div>Hi @Model.Name</div>", testModel);
-        var result = await template.RenderTemplate();
+        var template = new Template();
+        var result = await template.RenderTemplate(testModel,"<div>Hi @Model.Name</div>");
         return result;
     }
 }
