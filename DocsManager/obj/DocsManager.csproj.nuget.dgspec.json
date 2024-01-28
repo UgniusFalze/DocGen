@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/ugnius/repos/DocsManager/DocsManager/DocsManager.csproj": {}
+    "/home/ugnius/repos/DocGen/DocsManager/DocsManager.csproj": {}
   },
   "projects": {
-    "/home/ugnius/repos/DocsManager/DocsManager/DocsManager.csproj": {
+    "/home/ugnius/repos/DocGen/DocsManager/DocsManager.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/ugnius/repos/DocsManager/DocsManager/DocsManager.csproj",
+        "projectUniqueName": "/home/ugnius/repos/DocGen/DocsManager/DocsManager.csproj",
         "projectName": "DocsManager",
-        "projectPath": "/home/ugnius/repos/DocsManager/DocsManager/DocsManager.csproj",
+        "projectPath": "/home/ugnius/repos/DocGen/DocsManager/DocsManager.csproj",
         "packagesPath": "/home/ugnius/.nuget/packages/",
-        "outputPath": "/home/ugnius/repos/DocsManager/DocsManager/obj/",
+        "outputPath": "/home/ugnius/repos/DocGen/DocsManager/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/ugnius/.nuget/NuGet/NuGet.Config"
@@ -42,6 +42,10 @@
               "target": "Package",
               "version": "[8.0.0, )"
             },
+            "PuppeteerSharp": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
             "RazorLight": {
               "target": "Package",
               "version": "[2.3.1, )"
@@ -70,7 +74,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
