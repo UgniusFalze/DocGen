@@ -9,15 +9,15 @@ public class InvoiceDto
     public InvoiceDto(Invoice invoice)
     {
         Date = DateTime.Now;
-        Name = invoice.Name;
-        Address = invoice.Address;
-        PersonalId = invoice.PersonalId;
-        FreelanceWorkId = invoice.FreelanceWorkId;
-        BankNumber = invoice.BankNumber;
-        BankName = invoice.BankNumber;
-        BuyerName = invoice.BuyerName;
-        BuyerAddress = invoice.BuyerAddress;
-        BuyerCode = invoice.BuyerCode;
+        Name = invoice.InvoiceUser.FirstName + invoice.InvoiceUser.LastName;
+        Address = invoice.InvoiceUser.Address;
+        PersonalId = invoice.InvoiceUser.PersonalId;
+        FreelanceWorkId = invoice.InvoiceUser.FreelanceWorkId;
+        BankNumber = invoice.InvoiceUser.BankNumber;
+        BankName = invoice.InvoiceUser.BankNumber;
+        BuyerName = invoice.InvoiceClient.BuyerName;
+        BuyerAddress = invoice.InvoiceClient.BuyerAddress;
+        BuyerCode = invoice.InvoiceClient.BuyerCode;
         Products = invoice.Items.Select(item => new ItemDto(item)).ToList();
     }
 

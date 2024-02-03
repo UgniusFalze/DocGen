@@ -1,4 +1,5 @@
 using PuppeteerSharp;
+using PuppeteerSharp.Media;
 
 namespace DocsManager.Utils.DocsGenerator;
 
@@ -14,6 +15,8 @@ public class HtmlToPdf:IPdfGenerator
         });
         await using var page = await browser.NewPageAsync();
         await page.SetContentAsync(html);
-        return await page.PdfDataAsync();
+        var options = new PdfOptions();
+        options.Format = PaperFormat.A4;
+        return await page.PdfDataAsync(options);
     }
 }
