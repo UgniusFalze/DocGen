@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Text;
 using Microsoft.Extensions.Primitives;
 
@@ -5,21 +6,19 @@ namespace DocsManager.Models.Dto;
 
 public class InvoiceDto
 {
-    public InvoiceDto(DateTime date, string name, string address, string personalId, string freelanceWorkId,
-        string bankNumber, string bankName, string buyerName, string buyerAddress, string buyerCode,
-        List<ItemDto> products)
+    public InvoiceDto(Invoice invoice)
     {
-        Date = date;
-        Name = name;
-        Address = address;
-        PersonalId = personalId;
-        FreelanceWorkId = freelanceWorkId;
-        BankNumber = bankNumber;
-        BankName = bankName;
-        BuyerName = buyerName;
-        BuyerAddress = buyerAddress;
-        BuyerCode = buyerCode;
-        Products = products;
+        Date = DateTime.Now;
+        Name = invoice.Name;
+        Address = invoice.Address;
+        PersonalId = invoice.PersonalId;
+        FreelanceWorkId = invoice.FreelanceWorkId;
+        BankNumber = invoice.BankNumber;
+        BankName = invoice.BankNumber;
+        BuyerName = invoice.BuyerName;
+        BuyerAddress = invoice.BuyerAddress;
+        BuyerCode = invoice.BuyerCode;
+        Products = invoice.Items.Select(item => new ItemDto(item)).ToList();
     }
 
     public DateTime Date { get; }
@@ -41,11 +40,14 @@ public class InvoiceDto
     {
         int integral = (int)sum;
         int fractionPart = (int)((sum % 1.0m) * 100);
-        string result = "0 ct.";
-
+        string cents = "0 ct.";
+        string euros = "0 eurų";
+        string result = euros + ", " + cents;
+        
         if (fractionPart != 0)
         {
-            result = ConvertIntegerToWords(fractionPart) + "ct.";
+            cents = ConvertIntegerToWords(fractionPart) + "ct.";
+            result = euros + ", " + cents;
         }
 
         if (integral != 0)
@@ -64,8 +66,8 @@ public class InvoiceDto
                     ending = "eurai";
                     break;
             }
-
-            result = integralInWords + ending + ", " + result;
+            
+            result = integralInWords + ending + ", " + cents;
         }
 
 

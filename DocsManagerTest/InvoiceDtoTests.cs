@@ -11,7 +11,7 @@ public class InvoiceDtoTests
     [TestCase(987.65, "Devyni šimtai aštuoniasdešimt septyni eurai, šešiasdešimt penki ct.")]
     [TestCase(1234.56, "Tūkstantis du šimtai trisdešimt keturi eurai, penkiasdešimt šeši ct.")]
     [TestCase(55.75, "Penkiasdešimt penki eurai, septyniasdešimt penki ct.")]
-    [TestCase(0.99, "Devyniasdešimt devyni ct.")]
+    [TestCase(0.99, "0 eurų, devyniasdešimt devyni ct.")]
     [TestCase(1500.50, "Tūkstantis penki šimtai eurų, penkiasdešimt ct.")]
     [TestCase(101.58, "Šimtas vienas euras, penkiasdešimt aštuoni ct.")]
     [TestCase(99876.54, "Devyniasdešimt devyni tūkstančiai aštuoni šimtai septyniasdešimt šeši eurai, penkiasdešimt keturi ct.")]
