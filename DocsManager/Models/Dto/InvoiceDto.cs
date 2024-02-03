@@ -7,7 +7,7 @@ public class InvoiceDto
 {
     public InvoiceDto(DateTime date, string name, string address, string personalId, string freelanceWorkId,
         string bankNumber, string bankName, string buyerName, string buyerAddress, string buyerCode,
-        List<ItemDto> products, string sumInWords)
+        List<ItemDto> products)
     {
         Date = date;
         Name = name;
@@ -20,7 +20,6 @@ public class InvoiceDto
         BuyerAddress = buyerAddress;
         BuyerCode = buyerCode;
         Products = products;
-        SumInWords = sumInWords;
     }
 
     public DateTime Date { get; }
@@ -34,8 +33,8 @@ public class InvoiceDto
     public string BuyerAddress { get; }
     public string BuyerCode { get; }
     public List<ItemDto> Products { get; }
-    public string SumInWords { get; }
-    public decimal TotalSum => Products.Sum(product => product.TotalPrice);
+    public string SumInWords => ConvertSumToWords(TotalSum);
+     public decimal TotalSum => Products.Sum(product => product.TotalPrice);
     public string NameWithInitials => Name;
 
     public static string ConvertSumToWords(decimal sum)
@@ -70,7 +69,7 @@ public class InvoiceDto
         }
 
 
-        return result;
+        return char.ToUpper(result[0]) + result.Substring(1);
     }
 
     private static string ConvertIntegerToWords(int integer)
