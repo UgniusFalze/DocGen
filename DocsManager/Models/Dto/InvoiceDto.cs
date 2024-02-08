@@ -8,8 +8,9 @@ public class InvoiceDto
 {
     public InvoiceDto(Invoice invoice)
     {
-        Date = DateTime.Now;
-        Name = invoice.InvoiceUser.FirstName + invoice.InvoiceUser.LastName;
+        InvoiceId = invoice.InvoiceId;
+        Date = invoice.InvoiceDate;
+        Name = invoice.InvoiceUser.FirstName +" "+ invoice.InvoiceUser.LastName;
         Address = invoice.InvoiceUser.Address;
         PersonalId = invoice.InvoiceUser.PersonalId;
         FreelanceWorkId = invoice.InvoiceUser.FreelanceWorkId;
@@ -19,8 +20,10 @@ public class InvoiceDto
         BuyerAddress = invoice.InvoiceClient.BuyerAddress;
         BuyerCode = invoice.InvoiceClient.BuyerCode;
         Products = invoice.Items.Select(item => new ItemDto(item)).ToList();
+        NameWithInitials = invoice.InvoiceUser.FirstName[0] + ". " + invoice.InvoiceUser.LastName;
     }
 
+    public int InvoiceId { get; set; }
     public DateTime Date { get; }
     public string Name { get; }
     public string Address { get; }
@@ -34,7 +37,7 @@ public class InvoiceDto
     public List<ItemDto> Products { get; }
     public string SumInWords => ConvertSumToWords(TotalSum);
      public decimal TotalSum => Products.Sum(product => product.TotalPrice);
-    public string NameWithInitials => Name;
+    public string NameWithInitials { get; set; }
 
     public static string ConvertSumToWords(decimal sum)
     {

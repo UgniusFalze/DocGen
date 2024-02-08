@@ -58,6 +58,9 @@ namespace DocsManager.Migrations
                     b.Property<int>("Client")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("InvoiceDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("User")
                         .HasColumnType("uuid");
 
