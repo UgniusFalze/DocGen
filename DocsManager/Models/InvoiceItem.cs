@@ -11,4 +11,5 @@ public class InvoiceItem
     public string UnitOfMeasurement { get; set; }
     public int Units { get; set; }
     public decimal PriceOfUnit { get; set; }
+
 }
