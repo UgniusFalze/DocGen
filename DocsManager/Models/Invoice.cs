@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using DocsManager.Models.Dto;
 
 namespace DocsManager.Models;
 
@@ -15,5 +14,5 @@ public class Invoice
     [ForeignKey("User")] 
     public Guid InvoiceUserId { get; set; }
     public User InvoiceUser { get; set; }
-
+    public int SeriesNumber { get; set; }
 }
