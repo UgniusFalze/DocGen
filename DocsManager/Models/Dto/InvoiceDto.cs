@@ -6,35 +6,18 @@ namespace DocsManager.Models.Dto;
 
 public class InvoiceDto
 {
-    public InvoiceDto(Invoice invoice)
-    {
-        InvoiceId = invoice.InvoiceId;
-        Date = invoice.InvoiceDate;
-        Name = invoice.InvoiceUser.FirstName +" "+ invoice.InvoiceUser.LastName;
-        Address = invoice.InvoiceUser.Address;
-        PersonalId = invoice.InvoiceUser.PersonalId;
-        FreelanceWorkId = invoice.InvoiceUser.FreelanceWorkId;
-        BankNumber = invoice.InvoiceUser.BankNumber;
-        BankName = invoice.InvoiceUser.BankNumber;
-        BuyerName = invoice.InvoiceClient.BuyerName;
-        BuyerAddress = invoice.InvoiceClient.BuyerAddress;
-        BuyerCode = invoice.InvoiceClient.BuyerCode;
-        Products = invoice.Items.Select(item => new ItemDto(item)).ToList();
-        NameWithInitials = invoice.InvoiceUser.FirstName[0] + ". " + invoice.InvoiceUser.LastName;
-    }
-
-    public int InvoiceId { get; set; }
-    public DateTime Date { get; }
-    public string Name { get; }
-    public string Address { get; }
-    public string PersonalId { get; }
-    public string FreelanceWorkId { get; }
-    public string BankNumber { get; }
-    public string BankName { get; }
-    public string BuyerName { get; }
-    public string BuyerAddress { get; }
-    public string BuyerCode { get; }
-    public List<ItemDto> Products { get; }
+    public int SeriesNumber { get; set; }
+    public DateTime Date { get; set; }
+    public string Name { get; set; }
+    public string Address { get; set; }
+    public string PersonalId { get; set; }
+    public string FreelanceWorkId { get; set; }
+    public string BankNumber { get; set; }
+    public string BankName { get; set; }
+    public string BuyerName { get; set; }
+    public string BuyerAddress { get; set; }
+    public string BuyerCode { get; set; }
+    public List<ItemDto> Products { get; set; }
     public string SumInWords => ConvertSumToWords(TotalSum);
      public decimal TotalSum => Products.Sum(product => product.TotalPrice);
     public string NameWithInitials { get; set; }
