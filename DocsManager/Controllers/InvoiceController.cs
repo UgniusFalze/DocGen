@@ -47,7 +47,7 @@ namespace DocsManager
             var invoices = _context.Invoices
                 .Where(invoice => invoice.InvoiceUserId == user)
                 .Select(x =>
-                    new InvoiceListDto(x.InvoiceId, x.InvoiceDate, x.InvoiceClient.BuyerName ));
+                    new InvoiceListDto(x.SeriesNumber, x.InvoiceDate, x.InvoiceClient.BuyerName ));
 
             return await invoices.ToListAsync();
         }
@@ -122,12 +122,26 @@ namespace DocsManager
             {
                 InvoiceUser = userModel,
                 InvoiceDate = DateTime.Parse(invoicePost.InvoiceDate).ToUniversalTime(),
-                InvoiceClient = clientModel
+                InvoiceClient = clientModel,
+                SeriesNumber = invoicePost.SeriesNumber
             };
 
             _context.Invoices.Add(invoice);
             await _context.SaveChangesAsync();
+            foreach (var itemPostDto in invoicePost.Items)
+            {
+                var itemPost = new InvoiceItem
+                {
+                    InvoiceId = invoice.InvoiceId,
+                    Name = itemPostDto.Name,
+                    PriceOfUnit = itemPostDto.PriceOfUnit,
+                    Units = itemPostDto.Units,
+                    UnitOfMeasurement = itemPostDto.UnitOfMeasurement
+                };
+                _context.InvoiceItems.Add(itemPost);
+            }
 
+            await _context.SaveChangesAsync();
             return CreatedAtAction("GetInvoice", new { id = invoice.InvoiceId }, invoice);
         }
 
@@ -164,6 +178,7 @@ namespace DocsManager
 
             var last = await _context.Invoices
                 .Where(invoice => invoice.InvoiceUserId == user)
+                .OrderByDescending(invoice => invoice.SeriesNumber)
                 .Select(invoice => invoice.SeriesNumber)
                 .FirstOrDefaultAsync();
             return last;

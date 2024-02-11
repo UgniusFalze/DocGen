@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace DocsManager.Models;
-
+[Index(nameof(InvoiceUserId), nameof(SeriesNumber), IsUnique = true)]
 public class Invoice
 {
     public int InvoiceId { get; set; }

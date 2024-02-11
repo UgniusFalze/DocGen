@@ -7,5 +7,5 @@ public class InvoicePostDto
     
     public int SeriesNumber { get; set; }
     
-    public List<ItemDto> Items { get; set; }
+    public List<ItemPostDto> Items { get; set; }
 }
