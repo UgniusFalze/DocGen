@@ -40,11 +40,13 @@ namespace DocsManager.Controllers
                     BankNumber = x.InvoiceUser.BankNumber,
                     BuyerAddress = x.InvoiceClient.BuyerAddress,
                     BuyerCode = x.InvoiceClient.BuyerCode,
+                    VatCode = x.InvoiceClient.VatCode,
                     BuyerName = x.InvoiceClient.BuyerName,
-                    Date = x.InvoiceDate,
+                    Date = x.InvoiceDate.ToString("yyyy MM dd"),
                     FreelanceWorkId = x.InvoiceUser.FreelanceWorkId,
                     Name = x.InvoiceUser.FirstName +  " " + x.InvoiceUser.LastName,
-                    Products = x.Items.Select(x => new ItemDto(x)).ToList()
+                    Products = x.Items.Select(x => new ItemDto(x)).ToList(),
+                    NameWithInitials = x.InvoiceUser.FirstName.First() + ". " + x.InvoiceUser.LastName
                     
                 })
                 .FirstOrDefaultAsync();

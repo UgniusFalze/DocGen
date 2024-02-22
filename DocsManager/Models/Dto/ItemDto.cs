@@ -1,3 +1,4 @@
+using System.Globalization;
 using Newtonsoft.Json;
 
 namespace DocsManager.Models.Dto;
@@ -18,5 +19,9 @@ public class ItemDto
     public string UnitOfMeasurement { get; set; }
     public int Units { get; set; }
     public decimal PriceOfUnit { get; set; }
+
+    public string PriceOfUnitMoney => PriceOfUnit.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
     public decimal TotalPrice => Units * PriceOfUnit;
+
+    public string TotalMoney => TotalPrice.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
 }

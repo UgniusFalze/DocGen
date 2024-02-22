@@ -6,4 +6,6 @@ public class Client
     public string BuyerName { get; set; }
     public string BuyerAddress { get; set; }
     public string BuyerCode { get; set; }
+    
+    public string? VatCode { get; set; }
 }

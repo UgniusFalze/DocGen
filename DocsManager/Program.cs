@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Claims;
 using System.Text;
 using DocsManager.Models;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-
+Thread.CurrentThread.CurrentCulture = new CultureInfo("lt-LT");
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services

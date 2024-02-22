@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.Primitives;
 
@@ -7,7 +8,7 @@ namespace DocsManager.Models.Dto;
 public class InvoiceDto
 {
     public int SeriesNumber { get; set; }
-    public DateTime Date { get; set; }
+    public string Date { get; set; }
     public string Name { get; set; }
     public string Address { get; set; }
     public string PersonalId { get; set; }
@@ -17,11 +18,13 @@ public class InvoiceDto
     public string BuyerName { get; set; }
     public string BuyerAddress { get; set; }
     public string BuyerCode { get; set; }
+    public string? VatCode { get; set; }
     public List<ItemDto> Products { get; set; }
     public string SumInWords => ConvertSumToWords(TotalSum);
-     public decimal TotalSum => Products.Sum(product => product.TotalPrice);
+    private decimal TotalSum => Products.Sum(product => product.TotalPrice);
     public string NameWithInitials { get; set; }
-
+    public string TotalMoney => TotalSum.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
+    
     public static string ConvertSumToWords(decimal sum)
     {
         int integral = (int)sum;
