@@ -7,7 +7,7 @@ public class ItemDto
 {
     public ItemDto(InvoiceItem invoiceItem)
     {
-        InvoiceItemId = invoiceItem.InvoiceId;
+        InvoiceItemId = invoiceItem.InvoiceItemId;
         Name = invoiceItem.Name;
         UnitOfMeasurement = invoiceItem.UnitOfMeasurement;
         Units = invoiceItem.Units;

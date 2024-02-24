@@ -47,9 +47,35 @@ namespace DocsManager
 
         // GET: api/Invoice/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Invoice>> GetInvoice(int id)
+        public async Task<ActionResult<InvoiceDto>> GetInvoice(int id)
         {
-            var invoice = await context.Invoices.FindAsync(id);
+            var user = GetUserGuid();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var invoice = await context.Invoices
+                .Where(invoice => invoice.InvoiceUserId == user)
+                .Where(invoice => invoice.SeriesNumber == id)
+                .Select(x => new InvoiceDto
+                {
+                    SeriesNumber = x.SeriesNumber,
+                    Address = x.InvoiceUser.Address,
+                    BankName = x.InvoiceUser.BankName,
+                    BankNumber = x.InvoiceUser.BankNumber,
+                    BuyerAddress = x.InvoiceClient.BuyerAddress,
+                    BuyerCode = x.InvoiceClient.BuyerCode,
+                    VatCode = x.InvoiceClient.VatCode,
+                    BuyerName = x.InvoiceClient.BuyerName,
+                    Date = x.InvoiceDate.ToString("yyyy MM dd"),
+                    FreelanceWorkId = x.InvoiceUser.FreelanceWorkId,
+                    Name = x.InvoiceUser.FirstName +  " " + x.InvoiceUser.LastName,
+                    Products = x.Items.Select(x => new ItemDto(x)).ToList(),
+                    NameWithInitials = x.InvoiceUser.FirstName.First() + ". " + x.InvoiceUser.LastName
+                    
+                })
+                .FirstOrDefaultAsync();
+
 
             if (invoice == null)
             {
