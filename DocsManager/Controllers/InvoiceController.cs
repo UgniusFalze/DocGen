@@ -11,15 +11,8 @@ namespace DocsManager
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InvoiceController : ControllerBase
+    public class InvoiceController(DocsManagementContext context) : ControllerBase
     {
-        private readonly DocsManagementContext _context;
-
-        public InvoiceController(DocsManagementContext context)
-        {
-            _context = context;
-        }
-
         private Guid? GetUserGuid()
         {
             var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -44,7 +37,7 @@ namespace DocsManager
                 return NotFound();
             }
 
-            var invoices = _context.Invoices
+            var invoices = context.Invoices
                 .Where(invoice => invoice.InvoiceUserId == user)
                 .Select(x =>
                     new InvoiceListDto(x.SeriesNumber, x.InvoiceDate, x.InvoiceClient.BuyerName ));
@@ -56,7 +49,7 @@ namespace DocsManager
         [HttpGet("{id}")]
         public async Task<ActionResult<Invoice>> GetInvoice(int id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
+            var invoice = await context.Invoices.FindAsync(id);
 
             if (invoice == null)
             {
@@ -76,11 +69,11 @@ namespace DocsManager
                 return BadRequest();
             }
 
-            _context.Entry(invoice).State = EntityState.Modified;
+            context.Entry(invoice).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -111,8 +104,8 @@ namespace DocsManager
 
             var userGuid = Guid.Parse(user);
             
-            var userModel = await _context.Users.FindAsync(userGuid);
-            var clientModel = await _context.Clients.FindAsync(invoicePost.ClientId);
+            var userModel = await context.Users.FindAsync(userGuid);
+            var clientModel = await context.Clients.FindAsync(invoicePost.ClientId);
 
             if (userModel == null || clientModel == null)
             {
@@ -126,8 +119,8 @@ namespace DocsManager
                 SeriesNumber = invoicePost.SeriesNumber
             };
 
-            _context.Invoices.Add(invoice);
-            await _context.SaveChangesAsync();
+            context.Invoices.Add(invoice);
+            await context.SaveChangesAsync();
             foreach (var itemPostDto in invoicePost.Items)
             {
                 var itemPost = new InvoiceItem
@@ -138,10 +131,10 @@ namespace DocsManager
                     Units = itemPostDto.Units,
                     UnitOfMeasurement = itemPostDto.UnitOfMeasurement
                 };
-                _context.InvoiceItems.Add(itemPost);
+                context.InvoiceItems.Add(itemPost);
             }
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return CreatedAtAction("GetInvoice", new { id = invoice.InvoiceId }, invoice);
         }
 
@@ -149,21 +142,21 @@ namespace DocsManager
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInvoice(int id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
+            var invoice = await context.Invoices.FindAsync(id);
             if (invoice == null)
             {
                 return NotFound();
             }
 
-            _context.Invoices.Remove(invoice);
-            await _context.SaveChangesAsync();
+            context.Invoices.Remove(invoice);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool InvoiceExists(int id)
         {
-            return _context.Invoices.Any(e => e.InvoiceId == id);
+            return context.Invoices.Any(e => e.InvoiceId == id);
         }
 
         
@@ -176,7 +169,7 @@ namespace DocsManager
                 return NotFound();
             }
 
-            var last = await _context.Invoices
+            var last = await context.Invoices
                 .Where(invoice => invoice.InvoiceUserId == user)
                 .OrderByDescending(invoice => invoice.SeriesNumber)
                 .Select(invoice => invoice.SeriesNumber)

@@ -1,6 +1,4 @@
 using System.Globalization;
-using System.Security.Claims;
-using System.Text;
 using DocsManager.Models;
 using DocsManager.Utils.DocsGenerator;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
