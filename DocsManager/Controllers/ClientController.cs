@@ -20,7 +20,14 @@ namespace DocsManager
 
         // GET: api/Client
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ClientDTO>>> GetClients()
+        public async Task<ActionResult<IEnumerable<Client>>> GetClients()
+        {
+            var clients = _context.Clients.ToListAsync();
+            return await clients;
+        }
+        
+        [HttpGet("select")]
+        public async Task<ActionResult<IEnumerable<ClientDTO>>> GetClientsSelect()
         {
             var clients = _context.Clients.Select(client => new ClientDTO(client.ClientId, client.BuyerName));
             return await clients.ToListAsync();
