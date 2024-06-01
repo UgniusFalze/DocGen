@@ -11,7 +11,7 @@ public class HtmlToPdf:IPdfGenerator
         await browserFetcher.DownloadAsync();
         var browser = await Puppeteer.LaunchAsync(new LaunchOptions
         {
-            Headless = true
+            Headless = true, Args = ["--no-sandbox"]
         });
         await using var page = await browser.NewPageAsync();
         await page.SetContentAsync(html);
