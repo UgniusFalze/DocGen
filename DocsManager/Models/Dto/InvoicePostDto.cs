@@ -4,8 +4,8 @@ public class InvoicePostDto
 {
     public string InvoiceDate { get; set; }
     public int ClientId { get; set; }
-    
+
     public int SeriesNumber { get; set; }
-    
+
     public List<ItemPostDto> Items { get; set; }
 }

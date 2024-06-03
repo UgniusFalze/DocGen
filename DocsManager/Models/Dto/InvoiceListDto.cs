@@ -8,7 +8,7 @@ public record InvoiceListDto
         InvoiceDate = invoiceDate;
         ClientName = clientName;
     }
-    
+
 
     public int InvoiceId { get; }
     public DateTime InvoiceDate { get; }

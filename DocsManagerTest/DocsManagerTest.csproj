@@ -20,7 +20,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DocsManager\DocsManager.csproj" />
+        <ProjectReference Include="..\DocsManager\DocsManager.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include=".devcontainer\devcontainer.json"/>
     </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@ using PuppeteerSharp.Media;
 
 namespace DocsManager.Utils.DocsGenerator;
 
-public class HtmlToPdf:IPdfGenerator
+public class HtmlToPdf : IPdfGenerator
 {
     public async Task<byte[]> GeneratePdf(string html)
     {
@@ -15,8 +15,10 @@ public class HtmlToPdf:IPdfGenerator
         });
         await using var page = await browser.NewPageAsync();
         await page.SetContentAsync(html);
-        var options = new PdfOptions();
-        options.Format = PaperFormat.A4;
+        var options = new PdfOptions
+        {
+            Format = PaperFormat.A4
+        };
         return await page.PdfDataAsync(options);
     }
 }

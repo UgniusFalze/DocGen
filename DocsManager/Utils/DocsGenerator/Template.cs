@@ -3,9 +3,8 @@ using RazorLight;
 
 namespace DocsManager.Utils.DocsGenerator;
 
-public class Template():IHtmlGenerator
+public class Template : IHtmlGenerator
 {
-
     public async Task<string> RenderTemplate<T>(T docModel, string docTemplate)
     {
         var engine = new RazorLightEngineBuilder()

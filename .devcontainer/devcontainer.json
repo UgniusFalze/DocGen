@@ -1,0 +1,11 @@
+{
+  "name": "docsmanager",
+  "dockerComposeFile": "../../docker-dev-compose.yml",
+  "service": "docsmanager",
+  "onCreateCommand": {
+    "installDependencies": "sudo dnf install procps-ng libicu git -y"
+  },
+  "customizations": {
+    "jetbrains" : {"backend": "Rider"},
+  }
+}

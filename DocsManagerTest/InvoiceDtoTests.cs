@@ -14,7 +14,8 @@ public class InvoiceDtoTests
     [TestCase(0.99, "0 eurų, devyniasdešimt devyni ct.")]
     [TestCase(1500.50, "Tūkstantis penki šimtai eurų, penkiasdešimt ct.")]
     [TestCase(101.58, "Šimtas vienas euras, penkiasdešimt aštuoni ct.")]
-    [TestCase(99876.54, "Devyniasdešimt devyni tūkstančiai aštuoni šimtai septyniasdešimt šeši eurai, penkiasdešimt keturi ct.")]
+    [TestCase(99876.54,
+        "Devyniasdešimt devyni tūkstančiai aštuoni šimtai septyniasdešimt šeši eurai, penkiasdešimt keturi ct.")]
     public void Test_Correctly_Converts_Sum_To_Words(decimal ammount, string expectedWords)
     {
         var result = InvoiceDto.ConvertSumToWords(ammount);

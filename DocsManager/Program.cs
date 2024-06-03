@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
 Thread.CurrentThread.CurrentCulture = new CultureInfo("lt-LT");
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -23,7 +24,7 @@ builder.Services
         {
             RoleClaimType = "groups",
             ValidateIssuerSigningKey = false,
-            SignatureValidator = delegate (string token, TokenValidationParameters parameters)
+            SignatureValidator = delegate(string token, TokenValidationParameters parameters)
             {
                 var jwt = new JsonWebToken(token);
 
@@ -33,7 +34,7 @@ builder.Services
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidIssuer = configuration["auth:authorityServer"],
-            ValidAudience = "account"
+            ValidAudience = "DocsManagementReact"
         };
     });
 
@@ -44,7 +45,7 @@ builder.Services.AddAuthorization(o =>
         .Build();
 });
 
-builder.Services.AddCors(options => options.AddPolicy(name: "DocManagerUi",
+builder.Services.AddCors(options => options.AddPolicy("DocManagerUi",
     policy => { policy.WithOrigins(configuration["frontend:server"]).AllowAnyMethod().AllowAnyHeader(); }));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<DocsManagementContext>(optionsBuilder =>
@@ -62,7 +63,7 @@ builder.Services.AddSwaggerGen(c =>
         In = ParameterLocation.Header,
         Description = "Please provide JWT with bearer (Bearer {jwt token})",
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
+        Type = SecuritySchemeType.ApiKey
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -74,7 +75,7 @@ builder.Services.AddSwaggerGen(c =>
                 {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
-                },
+                }
             },
             new List<string>()
         }
@@ -87,10 +88,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<DocsManagementContext>();
-    if (context.Database.GetPendingMigrations().Any())
-    {
-        context.Database.Migrate();
-    }
+    if (context.Database.GetPendingMigrations().Any()) context.Database.Migrate();
 }
 
 app.UseHttpsRedirection();

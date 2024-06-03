@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Globalization;
 using System.Text;
-using Microsoft.Extensions.Primitives;
 
 namespace DocsManager.Models.Dto;
 
@@ -24,15 +22,15 @@ public class InvoiceDto
     private decimal TotalSum => Products.Sum(product => product.TotalPrice);
     public string NameWithInitials { get; set; }
     public string TotalMoney => TotalSum.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
-    
+
     public static string ConvertSumToWords(decimal sum)
     {
-        int integral = (int)sum;
-        int fractionPart = (int)((sum % 1.0m) * 100);
-        string cents = "0 ct.";
-        string euros = "0 eurų";
-        string result = euros + ", " + cents;
-        
+        var integral = (int)sum;
+        var fractionPart = (int)(sum % 1.0m * 100);
+        var cents = "0 ct.";
+        var euros = "0 eurų";
+        var result = euros + ", " + cents;
+
         if (fractionPart != 0)
         {
             cents = ConvertIntegerToWords(fractionPart) + "ct.";
@@ -55,7 +53,7 @@ public class InvoiceDto
                     ending = "eurai";
                     break;
             }
-            
+
             result = integralInWords + ending + ", " + cents;
         }
 

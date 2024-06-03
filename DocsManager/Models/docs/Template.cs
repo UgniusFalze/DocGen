@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DocsManager.Models.docs;
+
 [Table("Templates", Schema = "docs")]
 public class Template
 {

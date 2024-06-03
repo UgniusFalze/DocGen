@@ -10,5 +10,4 @@ public record ClientDTO
 
     public int ClientId { get; }
     public string ClientName { get; }
-
 }
