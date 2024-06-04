@@ -1,4 +1,4 @@
-image: mcr.microsoft.com/dotnet/aspnet:8.0
+image: microsoft/dotnet:latest
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
