@@ -3,7 +3,12 @@
   "dockerComposeFile": "../../docker-dev-compose.yml",
   "service": "docsmanager",
   "onCreateCommand": {
-    "installDependencies": "sudo dnf install procps-ng libicu git -y"
+    "installDependencies": "sudo dnf install procps-ng libicu git fedora-workstation-repositories 'dnf-command(config-manager)' -y",
+    "enableGoogleChromeRepo" : "sudo dnf config-manager --set-enabled google-chrome",
+    "installChrome" : "sudo dnf install google-chrome-stable" 
+  },
+  "containerEnv": {
+    "PUPPETEER_EXECUTABLE_PATH" : "/usr/bin/google-chrome-stable"
   },
   "customizations": {
     "jetbrains" : {"backend": "Rider"},
