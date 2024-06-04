@@ -166,4 +166,34 @@ public class InvoiceController(DocsManagementContext context) : ControllerBase
             .FirstOrDefaultAsync();
         return last;
     }
+
+    [Authorize]
+    [HttpPost("{id}/AddItem")]
+    public async Task<IActionResult> AddItem(int id, ItemPostDto itemPost)
+    {
+        var user = GetUserGuid();
+        if (user == null) return NotFound();
+
+        var invoice = await context.Invoices
+            .Where(invoice => invoice.InvoiceUserId == user)
+            .Where(invoice => invoice.SeriesNumber == id)
+            .FirstOrDefaultAsync();
+        if (invoice == null)
+        {
+            return NotFound();
+        }
+
+        var invoiceItem = new InvoiceItem
+        {
+            InvoiceId = invoice.InvoiceId,
+            PriceOfUnit = itemPost.PriceOfUnit,
+            UnitOfMeasurement = itemPost.UnitOfMeasurement,
+            Units = itemPost.Units,
+            Name = itemPost.Name
+        };
+
+        context.InvoiceItems.Add(invoiceItem);
+        await context.SaveChangesAsync();
+        return NoContent();
+    }
 }
