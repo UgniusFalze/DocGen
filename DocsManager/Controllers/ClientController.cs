@@ -12,6 +12,7 @@ namespace DocsManager;
 public class ClientController : ControllerBase
 {
     private readonly DocsManagementContext _context;
+    private const int CLIENT_PAGE_SIZE = 10;
 
     public ClientController(DocsManagementContext context)
     {
@@ -20,9 +21,10 @@ public class ClientController : ControllerBase
 
     // GET: api/Client
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Client>>> GetClients()
+    public async Task<ActionResult<IEnumerable<Client>>> GetClients([FromQuery(Name = "page")] int page)
     {
-        var clients = _context.Clients.ToListAsync();
+        page = page * CLIENT_PAGE_SIZE;
+        var clients = _context.Clients.Skip(page).Take(CLIENT_PAGE_SIZE).ToListAsync();
         return await clients;
     }
 
@@ -94,5 +96,10 @@ public class ClientController : ControllerBase
     private bool ClientExists(int id)
     {
         return _context.Clients.Any(e => e.ClientId == id);
+    }
+    [HttpGet("count")]
+    public async Task<ActionResult<int>> GetClientCount()
+    {
+        return await _context.Clients.CountAsync();
     }
 }
