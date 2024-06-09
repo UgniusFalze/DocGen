@@ -1,5 +1,7 @@
 using System.Globalization;
+using System.Net.Mime;
 using DocsManager.Models;
+using DocsManager.Services.IntegerToWordsConverter;
 using DocsManager.Utils.DocsGenerator;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -54,6 +56,7 @@ builder.Services.AddDbContext<DocsManagementContext>(optionsBuilder =>
 });
 builder.Services.AddScoped<IHtmlGenerator, Template>();
 builder.Services.AddScoped<IPdfGenerator, HtmlToPdf>();
+builder.Services.AddScoped<IntegerToWordsConverter, LithuanianIntegerToWords>();
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -101,5 +104,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseExceptionHandler(exceptionHandlerApp =>
+{
+    exceptionHandlerApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        
+        context.Response.ContentType = MediaTypeNames.Text.Plain;
+
+        await context.Response.WriteAsync("An exception was thrown.");
+    });
+});
 
 app.Run();

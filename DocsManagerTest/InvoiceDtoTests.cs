@@ -1,4 +1,5 @@
 using DocsManager.Models.Dto;
+using DocsManager.Services.IntegerToWordsConverter;
 
 namespace DocGenLibaryTest;
 
@@ -16,9 +17,11 @@ public class InvoiceDtoTests
     [TestCase(101.58, "Šimtas vienas euras, penkiasdešimt aštuoni ct.")]
     [TestCase(99876.54,
         "Devyniasdešimt devyni tūkstančiai aštuoni šimtai septyniasdešimt šeši eurai, penkiasdešimt keturi ct.")]
+    [TestCase(11001.0, "Vienuolika tūkstančių vienas euras, 0 ct.")]
     public void Test_Correctly_Converts_Sum_To_Words(decimal ammount, string expectedWords)
     {
-        var result = InvoiceDto.ConvertSumToWords(ammount);
+        var litwc = new LithuanianIntegerToWords();
+        var result = litwc.ConvertSumToWords(ammount);
 
         Assert.AreEqual(expectedWords, result);
     }
