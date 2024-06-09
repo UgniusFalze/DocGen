@@ -1,6 +1,8 @@
+using System.Globalization;
 using System.Security.Claims;
 using DocsManager.Models;
 using DocsManager.Models.Dto;
+using DocsManager.Services.IntegerToWordsConverter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +11,7 @@ namespace DocsManager;
 
 [Route("api/[controller]")]
 [ApiController]
-public class InvoiceController(DocsManagementContext context) : ControllerBase
+public class InvoiceController(DocsManagementContext context, IntegerToWordsConverter itwc) : ControllerBase
 {
     private Guid? GetUserGuid()
     {
@@ -62,10 +64,11 @@ public class InvoiceController(DocsManagementContext context) : ControllerBase
                 NameWithInitials = x.InvoiceUser.FirstName.First() + ". " + x.InvoiceUser.LastName
             })
             .FirstOrDefaultAsync();
-
-
         if (invoice == null) return NotFound();
-
+        var totalCost = invoice.Products.Sum(product => product.TotalPrice);
+        invoice.TotalMoney = totalCost.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
+        invoice.SumInWords = itwc.ConvertSumToWords(totalCost);
+        
         return invoice;
     }
 

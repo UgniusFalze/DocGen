@@ -1,6 +1,8 @@
+using System.Globalization;
 using System.Security.Claims;
 using DocsManager.Models;
 using DocsManager.Models.Dto;
+using DocsManager.Services.IntegerToWordsConverter;
 using DocsManager.Utils.DocsGenerator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +16,8 @@ namespace DocsManager.Controllers;
 public class PdfDocumentController(
     IPdfGenerator pdfGenerator,
     IHtmlGenerator htmlGenerator,
-    DocsManagementContext _docsManagementContext) : ControllerBase
+    DocsManagementContext _docsManagementContext,
+    IntegerToWordsConverter itwc) : ControllerBase
 {
     private Guid? GetUserGuid()
     {
@@ -44,11 +47,14 @@ public class PdfDocumentController(
                 Date = x.InvoiceDate.ToString("yyyy MM dd"),
                 FreelanceWorkId = x.InvoiceUser.FreelanceWorkId,
                 Name = x.InvoiceUser.FirstName + " " + x.InvoiceUser.LastName,
-                Products = x.Items.Select(x => new ItemDto(x)).ToList(),
-                NameWithInitials = x.InvoiceUser.FirstName.First() + ". " + x.InvoiceUser.LastName
+                Products = x.Items.Select(x => new ItemDto(x)).ToList()
             })
             .FirstOrDefaultAsync();
         if (invoice == null) return NotFound();
+        var totalCost = invoice.Products.Sum(product => product.TotalPrice);
+        invoice.TotalMoney = totalCost.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
+        invoice.SumInWords = itwc.ConvertSumToWords(totalCost);
+        
         var htmlString = _docsManagementContext.Templates.Where(t => t.TemplateModel == "invoice").ToList();
         var template = htmlGenerator.RenderTemplate(invoice, htmlString.First().HtmlString);
         var pdfs = await template.ContinueWith(templateString => pdfGenerator.GeneratePdf(templateString.Result));
