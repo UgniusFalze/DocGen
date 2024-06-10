@@ -9,10 +9,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 Thread.CurrentThread.CurrentCulture = new CultureInfo("lt-LT");
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+
+builder.Host.UseSerilog(((context, loggerConfiguration) => 
+        {
+            loggerConfiguration.ReadFrom.Configuration(configuration);
+        }
+        ));
+
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(x =>
@@ -105,16 +113,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseExceptionHandler(exceptionHandlerApp =>
-{
-    exceptionHandlerApp.Run(async context =>
-    {
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        
-        context.Response.ContentType = MediaTypeNames.Text.Plain;
-
-        await context.Response.WriteAsync("An exception was thrown.");
-    });
-});
+app.UseExceptionHandler("/error");
 
 app.Run();
