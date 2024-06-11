@@ -19,7 +19,7 @@ public class InvoiceDto
     public string BuyerCode { get; set; }
     public string? VatCode { get; set; }
     public List<ItemDto> Products { get; set; }
-    public string SumInWords;
+    public string SumInWords { get; set; }
     public string NameWithInitials { get; set; }
-    public string TotalMoney;
+    public string TotalMoney { get; set; }
 }
