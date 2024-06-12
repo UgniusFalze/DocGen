@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using DocsManager.Models;
 using DocsManager.Models.Dto;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +15,13 @@ public class ClientController : ControllerBase
     private readonly DocsManagementContext _context;
     private const int CLIENT_PAGE_SIZE = 10;
 
+    private Guid? GetUserGuid()
+    {
+        var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (user == null) return null;
+
+        return Guid.Parse(user);
+    }
     public ClientController(DocsManagementContext context)
     {
         _context = context;
@@ -84,9 +92,14 @@ public class ClientController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteClient(int id)
     {
+        var userId = GetUserGuid();
+        if (userId == null) return NotFound();
         var client = await _context.Clients.FindAsync(id);
         if (client == null) return NotFound();
-
+        var hasNonUserInvoices = await _context.Invoices.AnyAsync(invoice => invoice.InvoiceClientId == id && invoice.InvoiceUserId != userId);
+        if (hasNonUserInvoices) return UnprocessableEntity();
+        
+        
         _context.Clients.Remove(client);
         await _context.SaveChangesAsync();
 
