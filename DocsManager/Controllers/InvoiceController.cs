@@ -33,7 +33,11 @@ public class InvoiceController(DocsManagementContext context, IntegerToWordsConv
         var invoices = context.Invoices
             .Where(invoice => invoice.InvoiceUserId == user)
             .Select(x =>
-                new InvoiceListDto(x.SeriesNumber, x.InvoiceDate, x.InvoiceClient.BuyerName));
+                new InvoiceListDto(
+                    x.SeriesNumber, 
+                    x.InvoiceDate, 
+                    x.InvoiceClient.BuyerName,
+                    x.Items.Sum(item => item.PriceOfUnit * item.Units)));
 
         return await invoices.ToListAsync();
     }
