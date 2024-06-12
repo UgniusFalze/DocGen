@@ -37,7 +37,7 @@ public class InvoiceController(DocsManagementContext context, IntegerToWordsConv
                     x.SeriesNumber, 
                     x.InvoiceDate, 
                     x.InvoiceClient.BuyerName,
-                    x.Items.Sum(item => item.PriceOfUnit)));
+                    x.Items.Sum(item => item.PriceOfUnit * item.Units)));
 
         return await invoices.ToListAsync();
     }
