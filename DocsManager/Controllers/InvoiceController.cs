@@ -20,29 +20,28 @@ public class InvoiceController(DocsManagementContext context, IntegerToWordsConv
 
         return Guid.Parse(user);
     }
-
-    // GET: api/Invoice
+    
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<InvoiceListDto>>> GetInvoices()
+    public async Task<ActionResult<InvoicesGridDto>> GetInvoices()
     {
         var user = GetUserGuid();
 
         if (user == null) return NotFound();
 
-        var invoices = context.Invoices
+        var invoices = await context.Invoices
             .Where(invoice => invoice.InvoiceUserId == user)
             .Select(x =>
                 new InvoiceListDto(
-                    x.SeriesNumber, 
-                    x.InvoiceDate, 
+                    x.SeriesNumber,
+                    x.InvoiceDate,
                     x.InvoiceClient.BuyerName,
-                    x.Items.Sum(item => item.PriceOfUnit * item.Units)));
-
-        return await invoices.ToListAsync();
+                    x.Items.Sum(item => item.PriceOfUnit * item.Units)))
+            .ToListAsync();
+        var sum = invoices.Sum(invoiceListDto => invoiceListDto.TotalSum);
+        return new InvoicesGridDto(invoices, sum);
     }
-
-    // GET: api/Invoice/5
+    
     [HttpGet("{id}")]
     public async Task<ActionResult<InvoiceDto>> GetInvoice(int id)
     {
@@ -75,9 +74,7 @@ public class InvoiceController(DocsManagementContext context, IntegerToWordsConv
         
         return invoice;
     }
-
-    // PUT: api/Invoice/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    
     [HttpPut("{id}")]
     public async Task<IActionResult> PutInvoice(int id, Invoice invoice)
     {
@@ -98,9 +95,7 @@ public class InvoiceController(DocsManagementContext context, IntegerToWordsConv
 
         return NoContent();
     }
-
-    // POST: api/Invoice
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    
     [Authorize]
     [HttpPost]
     public async Task<ActionResult<Invoice>> PostInvoice(InvoicePostDto invoicePost)
@@ -140,8 +135,7 @@ public class InvoiceController(DocsManagementContext context, IntegerToWordsConv
         await context.SaveChangesAsync();
         return CreatedAtAction("GetInvoice", new { id = invoice.InvoiceId }, invoice);
     }
-
-    // DELETE: api/Invoice/5
+    
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteInvoice(int id)
     {
