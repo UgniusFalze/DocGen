@@ -1,3 +1,3 @@
 namespace DocsManager.Models.Dto;
 
-public record InvoiceListDto(int InvoiceId, DateTime InvoiceDate, string ClientName, decimal TotalSum);
+public record InvoiceListDto(int InvoiceId, DateTime InvoiceDate, bool IsPayed, string ClientName, decimal TotalSum);
