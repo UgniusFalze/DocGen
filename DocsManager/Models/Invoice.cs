@@ -19,4 +19,6 @@ public class Invoice
 
     public User InvoiceUser { get; set; }
     public int SeriesNumber { get; set; }
+    
+    public bool IsPayed { get; set; }
 }
