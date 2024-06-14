@@ -15,7 +15,6 @@ namespace DocsManager.Controllers;
 [Authorize]
 public class PdfDocumentController(
     IPdfGenerator pdfGenerator,
-    IHtmlGenerator htmlGenerator,
     DocsManagementContext _docsManagementContext,
     IntegerToWordsConverter itwc) : ControllerBase
 {
@@ -54,15 +53,9 @@ public class PdfDocumentController(
         var totalCost = invoice.Products.Sum(product => product.TotalPrice);
         invoice.TotalMoney = totalCost.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
         invoice.SumInWords = itwc.ConvertSumToWords(totalCost);
-        
-        var htmlString = _docsManagementContext.Templates.Where(t => t.TemplateModel == "invoice").ToList();
-        var template = htmlGenerator.RenderTemplate(invoice, htmlString.First().HtmlString);
-        var pdfs = await template.ContinueWith(templateString => pdfGenerator.GeneratePdf(templateString.Result));
-        return await pdfs.ContinueWith(pdf =>
-        {
-            var result = File(pdf.Result, "application/pdf");
-            result.FileDownloadName = "Invoice.pdf";
-            return result;
-        });
+        var pdf = pdfGenerator.GenerateInvoicePdf(invoice);
+        var result = File(pdf, "application/pdf");
+        result.FileDownloadName = "Invoice.pdf";
+        return result;
     }
 }

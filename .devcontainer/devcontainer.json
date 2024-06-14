@@ -4,8 +4,8 @@
   "service": "docsmanager",
   "onCreateCommand": {
     "installDependencies": "sudo dnf install procps-ng libicu git fedora-workstation-repositories 'dnf-command(config-manager)' -y",
-    "enableGoogleChromeRepo" : "sudo dnf config-manager --set-enabled google-chrome -y",
-    "installChrome" : "sudo dnf install google-chrome-stable -y" 
+    "dotnet install" : "sudo dnf install dotnet-sdk-8.0 -y",
+    "dotnet tools install" : "dotnet tool update --global dotnet-ef"
   },
   "containerEnv": {
     "PUPPETEER_EXECUTABLE_PATH" : "/usr/bin/google-chrome-stable"

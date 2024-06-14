@@ -35,6 +35,7 @@ public class InvoiceController(DocsManagementContext context, IntegerToWordsConv
                 new InvoiceListDto(
                     x.SeriesNumber,
                     x.InvoiceDate,
+                    x.IsPayed,
                     x.InvoiceClient.BuyerName,
                     x.Items.Sum(item => item.PriceOfUnit * item.Units)))
             .ToListAsync();
@@ -197,4 +198,37 @@ public class InvoiceController(DocsManagementContext context, IntegerToWordsConv
         await context.SaveChangesAsync();
         return NoContent();
     }
+    
+    [Authorize]
+    [HttpPost("{id}/setPayed")]
+    public async Task<IActionResult> SetPayed(int id, IsPayedDto isPayed)
+    {
+        var user = GetUserGuid();
+        if (user == null) return NotFound("User not found");
+        var invoice = await context.Invoices
+            .Where(invoice => invoice.InvoiceUserId == user)
+            .Where(invoice => invoice.SeriesNumber == id)
+            .FirstOrDefaultAsync();
+        if (invoice == null)
+        {
+            return NotFound("Invoice not found");
+        }
+
+        invoice.IsPayed = isPayed.isPayed;
+        
+        context.Entry(invoice).State = EntityState.Modified;
+        
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!InvoiceExists(id))
+                return NotFound("Invoice not found");
+            throw;
+        }
+
+        return NoContent();
+    }   
 }
