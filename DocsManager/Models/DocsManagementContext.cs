@@ -16,5 +16,8 @@ public class DocsManagementContext(DbContextOptions<DocsManagementContext> optio
         builder.Entity<Template>()
             .HasIndex(t => t.TemplateModel)
             .IsUnique();
+        builder.Entity<Invoice>()
+            .Property(b => b.IsPayed)
+            .HasDefaultValue(false);
     }
 }

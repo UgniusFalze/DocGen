@@ -9,8 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using QuestPDF.Infrastructure;
 using Serilog;
-
+QuestPDF.Settings.License = LicenseType.Community;
 Thread.CurrentThread.CurrentCulture = new CultureInfo("lt-LT");
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -41,10 +42,9 @@ builder.Services
                 return jwt;
             },
             ValidateIssuer = true,
-            ValidateAudience = true,
             ValidateLifetime = true,
             ValidIssuer = configuration["auth:authorityServer"],
-            ValidAudience = "DocsManagementReact"
+            ValidateAudience = false
         };
     });
 
@@ -62,8 +62,7 @@ builder.Services.AddDbContext<DocsManagementContext>(optionsBuilder =>
 {
     optionsBuilder.UseNpgsql(configuration["dbstring"]);
 });
-builder.Services.AddScoped<IHtmlGenerator, Template>();
-builder.Services.AddScoped<IPdfGenerator, HtmlToPdf>();
+builder.Services.AddScoped<IPdfGenerator, PdfGenerator>();
 builder.Services.AddScoped<IntegerToWordsConverter, LithuanianIntegerToWords>();
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
