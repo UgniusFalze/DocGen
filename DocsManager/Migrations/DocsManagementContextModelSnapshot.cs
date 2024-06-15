@@ -67,6 +67,11 @@ namespace DocsManager.Migrations
                     b.Property<Guid>("InvoiceUserId")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("IsPayed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<int>("SeriesNumber")
                         .HasColumnType("integer");
 
@@ -149,30 +154,6 @@ namespace DocsManager.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("DocsManager.Models.docs.Template", b =>
-                {
-                    b.Property<int>("TemplateId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TemplateId"));
-
-                    b.Property<string>("HtmlString")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TemplateModel")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("TemplateId");
-
-                    b.HasIndex("TemplateModel")
-                        .IsUnique();
-
-                    b.ToTable("Templates", "docs");
                 });
 
             modelBuilder.Entity("DocsManager.Models.Invoice", b =>
