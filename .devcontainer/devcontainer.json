@@ -7,9 +7,6 @@
     "dotnet install" : "sudo dnf install dotnet-sdk-8.0 -y",
     "dotnet tools install" : "dotnet tool update --global dotnet-ef"
   },
-  "containerEnv": {
-    "PUPPETEER_EXECUTABLE_PATH" : "/usr/bin/google-chrome-stable"
-  },
   "customizations": {
     "jetbrains" : {"backend": "Rider"},
   }
