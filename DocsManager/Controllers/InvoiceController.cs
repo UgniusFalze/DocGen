@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace DocsManager;
+namespace DocsManager.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
