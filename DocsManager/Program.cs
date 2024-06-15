@@ -1,6 +1,6 @@
 using System.Globalization;
-using System.Net.Mime;
 using DocsManager.Models;
+using DocsManager.Services.Client;
 using DocsManager.Services.IntegerToWordsConverter;
 using DocsManager.Utils.DocsGenerator;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -64,6 +64,7 @@ builder.Services.AddDbContext<DocsManagementContext>(optionsBuilder =>
 });
 builder.Services.AddScoped<IPdfGenerator, PdfGenerator>();
 builder.Services.AddScoped<IntegerToWordsConverter, LithuanianIntegerToWords>();
+builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
 {
