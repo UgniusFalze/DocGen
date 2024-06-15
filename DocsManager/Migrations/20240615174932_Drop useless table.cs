@@ -14,21 +14,11 @@ namespace DocsManager.Migrations
             migrationBuilder.DropTable(
                 name: "Templates",
                 schema: "docs");
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsPayed",
-                table: "Invoices",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "IsPayed",
-                table: "Invoices");
 
             migrationBuilder.EnsureSchema(
                 name: "docs");
