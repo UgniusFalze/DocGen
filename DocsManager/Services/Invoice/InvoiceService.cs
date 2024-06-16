@@ -162,6 +162,21 @@ public class InvoiceService (DocsManagementContext context, IntegerToWordsConver
 
         return true;
     }
+
+    public async Task<bool> RemoveItemFromInvoice(int invoiceId, int invoiceItemId, Guid userId)
+    {
+        var invoiceItem = await context.InvoiceItems
+            .Where(invoiceItem => invoiceItem.Invoice.SeriesNumber == invoiceId)
+            .Where(invoiceItem => invoiceItem.InvoiceItemId == invoiceItemId)
+            .Where(invoiceItem => invoiceItem.Invoice.InvoiceUserId == userId)
+            .FirstOrDefaultAsync();
+        if (invoiceItem == null) return false;
+        
+        context.InvoiceItems.Remove(invoiceItem);
+        await context.SaveChangesAsync();
+
+        return true;
+    }
     
     private bool InvoiceExists(int id)
     {

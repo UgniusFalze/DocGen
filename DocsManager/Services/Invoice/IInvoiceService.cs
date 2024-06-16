@@ -17,4 +17,6 @@ public interface IInvoiceService
     public Task<bool> AddItemToInvoice(int id, ItemPostDto itemPost, Guid userId);
 
     public Task<bool> SetPayed(int id, IsPayedDto isPayed, Guid userId);
+
+    public Task<bool> RemoveItemFromInvoice(int invoiceId, int itemId, Guid userId);
 }

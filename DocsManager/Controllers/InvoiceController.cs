@@ -69,13 +69,22 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerBase
         return result ?? 1;
     }
     
-    [HttpPost("{id}/AddItem")]
+    [HttpPost("{id}/addItem")]
     public async Task<IActionResult> AddItem(int id, ItemPostDto itemPost)
     {
         var user = GetUserGuid();
         if (user == null) return NotFound("User not found");
         var result = await invoiceService.AddItemToInvoice(id, itemPost, user.Value);
         return result ? NoContent() : NotFound("Invoice not found");
+    }
+    
+    [HttpDelete("{id}/deleteItem/{itemId}")]
+    public async Task<IActionResult> DeleteItem(int id, int itemId)
+    {
+        var user = GetUserGuid();
+        if (user == null) return NotFound("User not found");
+        var result = await invoiceService.RemoveItemFromInvoice(id, itemId, user.Value);
+        return result ? NoContent() : NotFound("Invoice item not found");
     }
     
     [HttpPost("{id}/setPayed")]
