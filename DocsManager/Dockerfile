@@ -2,7 +2,7 @@
 USER $APP_UID
 WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Development
+ARG BUILD_CONFIGURATION=Production
 WORKDIR /src
 COPY ["DocsManager/DocsManager.csproj", "DocsManager/"]
 RUN dotnet restore "DocsManager/DocsManager.csproj"
