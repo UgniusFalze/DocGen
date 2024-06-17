@@ -1,18 +1,17 @@
-workflow:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-
 stages:          
   - test
   - build
 
 nunit:
-    image: mcr.microsoft.com/dotnet/sdk:8.0
-    stage: test
-    script:
-        - dotnet test
+  image: mcr.microsoft.com/dotnet/sdk:8.0
+  stage: test
+  script:
+      - dotnet test
+  rules:
+  - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 
 build-image:
+  stage: build
   image: docker:20.10.10
   services:
         - docker:20.10.10-dind
