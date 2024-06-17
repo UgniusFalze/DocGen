@@ -1,12 +1,24 @@
-image: mcr.microsoft.com/dotnet/sdk:8.0
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 
 stages:          
   - test
+  - build
 
 nunit:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
     stage: test
     script:
         - dotnet test
+
+build-image:
+  image: docker:20.10.10
+  services:
+        - docker:20.10.10-dind
+  rules:
+   - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+    - docker build -t $CI_REGISTRY_IMAGE .
+    - docker push $CI_REGISTRY_IMAGE
