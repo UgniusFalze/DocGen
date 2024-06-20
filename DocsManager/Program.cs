@@ -9,7 +9,8 @@ var docManagerAppBuilder = new DocManagerAppBuilder(args)
     .ConfigureEndpoints()
     .ConfigureDbContext()
     .ConfigureInternalServices()
-    .ConfigureControllers();
+    .ConfigureControllers()
+    .ConfigureCors();
 
 var app = docManagerAppBuilder.Build();
 

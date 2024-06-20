@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using DocsManager.Models;
 using DocsManager.Services.Client;
 using DocsManager.Services.IntegerToWordsConverter;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using QuestPDF.Infrastructure;
 using Serilog;
 
@@ -91,10 +93,27 @@ public class DocManagerAppBuilder
 
     public DocManagerAppBuilder ConfigureDbContext()
     {
-        
+        var dbstring = _applicationConfig["dbstring"];
+        var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+        if (databaseUrl != null)
+        {
+            var databaseUri = new Uri(databaseUrl);
+            var userInfo = databaseUri.UserInfo.Split(':');
+            var builder = new NpgsqlConnectionStringBuilder
+            {
+                Host = databaseUri.Host,
+                Port = databaseUri.Port,
+                Username = userInfo[0],
+                Password = userInfo[1],
+                Database = databaseUri.LocalPath.TrimStart('/'),
+                SslMode = SslMode.Allow
+            };
+
+            dbstring = builder.ToString();
+        }
         _applicationBuilder.Services.AddDbContext<DocsManagementContext>(optionsBuilder =>
         {
-            optionsBuilder.UseNpgsql(_applicationConfig["dbstring"]);
+            optionsBuilder.UseNpgsql(dbstring);
         });
 
         return this;
@@ -111,7 +130,10 @@ public class DocManagerAppBuilder
 
     public DocManagerAppBuilder ConfigureControllers()
     {
-        _applicationBuilder.Services.AddControllers();
+        _applicationBuilder.Services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
         _applicationBuilder.Services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo() { Title = "DocsManager Swagger", Version = "v1" });
