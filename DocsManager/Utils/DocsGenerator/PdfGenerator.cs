@@ -93,6 +93,12 @@ public class PdfGenerator : IPdfGenerator
                                 buyerColumn
                                     .Item()
                                     .Text("Įmonės kodas: " + invoiceDto.BuyerCode);
+                                if (invoiceDto.VatCode != null)
+                                {
+                                    buyerColumn
+                                        .Item()
+                                        .Text("Įmonės PVM kodas: " + invoiceDto.VatCode);
+                                }
                             });
                         });
                         column.Item().BorderTop(2).BorderBottom(1).Table(table =>
