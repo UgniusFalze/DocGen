@@ -38,6 +38,7 @@ public class InvoiceService (DocsManagementContext context, IntegerToWordsConver
                 BuyerCode = x.InvoiceClient.BuyerCode,
                 VatCode = x.InvoiceClient.VatCode,
                 BuyerName = x.InvoiceClient.BuyerName,
+                PersonalId = x.InvoiceUser.PersonalId,
                 Date = x.InvoiceDate.ToString("yyyy MM dd"),
                 FreelanceWorkId = x.InvoiceUser.FreelanceWorkId,
                 Name = x.InvoiceUser.FirstName + " " + x.InvoiceUser.LastName,
