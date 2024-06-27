@@ -23,6 +23,6 @@ public class InvoiceDtoTests
         var litwc = new LithuanianIntegerToWords();
         var result = litwc.ConvertSumToWords(ammount);
 
-        Assert.AreEqual(expectedWords, result);
+        Assert.That(result, Is.EqualTo(expectedWords));
     }
 }

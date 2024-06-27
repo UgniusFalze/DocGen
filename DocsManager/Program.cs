@@ -36,3 +36,5 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler("/error");
 
 app.Run();
+
+public partial class Program;
