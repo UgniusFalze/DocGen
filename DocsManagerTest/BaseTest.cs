@@ -1,8 +1,10 @@
+using System.Text;
 using DocGenLibaryTest.factories;
 using DocsManager.Models;
 using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using Testcontainers.PostgreSql;
 
 namespace DocGenLibaryTest;
@@ -22,12 +24,15 @@ public abstract class BaseTest
     [SetUp]
     public async Task PopulateDb()
     {
-        await DbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Invoices\" RESTART IDENTITY CASCADE");
-        await DbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Users\" RESTART IDENTITY CASCADE");
-        await DbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Clients\" RESTART IDENTITY CASCADE");
+        await DbContext.Database.ExecuteSqlRawAsync(GetTruncateSql("InvoiceItems"));
+        await DbContext.Database.ExecuteSqlRawAsync(GetTruncateSql("Invoices"));
+        await DbContext.Database.ExecuteSqlRawAsync(GetTruncateSql("Users"));
+        await DbContext.Database.ExecuteSqlRawAsync(GetTruncateSql("Clients"));
         await DbContext.Database.ExecuteSqlRawAsync(GetUserPopulateSql());
         await DbContext.Database.ExecuteSqlRawAsync(GetClientPopulateSql());
         await DbContext.Database.ExecuteSqlRawAsync(GetInvoicePopulateSql());
+        await DbContext.Database.ExecuteSqlRawAsync(GetInvoiceItemsPopulateSql());
+        DbContext.ChangeTracker.Clear();
     }
     
     [OneTimeTearDown]
@@ -54,9 +59,24 @@ public abstract class BaseTest
     {
         return GetPopulateSql("dataPopulation/userTest.sql");
     }
-    
+
     private static string GetInvoicePopulateSql()
     {
         return GetPopulateSql("dataPopulation/invoicesTest.sql");
+    }
+    
+    private static string GetInvoiceItemsPopulateSql()
+    {
+        return GetPopulateSql("dataPopulation/invoicesItemsTest.sql");
+    }
+
+    private static string GetTruncateSql(string tableName)
+    {
+        var result = new StringBuilder()
+            .Append("TRUNCATE TABLE \"")
+            .Append(tableName)
+            .Append("\" RESTART IDENTITY CASCADE")
+            .ToString();
+        return result;
     }
 }

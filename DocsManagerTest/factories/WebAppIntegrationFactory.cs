@@ -34,7 +34,9 @@ public class WebAppIntegrationFactory:WebApplicationFactory<Program>
             }
 
             services.AddDbContext<DocsManagementContext>(options =>
-                options.UseNpgsql(_postgreSqlContainer.GetConnectionString()));
+                options
+                    .EnableSensitiveDataLogging()
+                    .UseNpgsql(_postgreSqlContainer.GetConnectionString()));
         });
         
     }
