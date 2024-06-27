@@ -1,8 +1,7 @@
-using DocsManager.Models;
 using DocsManager.Models.Dto;
 using DocsManager.Services.Client;
 
-namespace DocGenLibaryTest;
+namespace DocGenLibaryTest.ServicesTests;
 
 public class ClientServiceTest : BaseTest
 {
