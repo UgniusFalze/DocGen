@@ -1,12 +1,7 @@
-using System.Globalization;
-using System.Security.Claims;
 using DocsManager.Models;
 using DocsManager.Models.Dto;
-using DocsManager.Services.IntegerToWordsConverter;
 using DocsManager.Services.Invoice;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DocsManager.Controllers;
 
