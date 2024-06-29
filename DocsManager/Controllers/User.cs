@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using DocsManager.Models;
 using DocsManager.Models.Dto;
 using DocsManager.Services.User;
 using Microsoft.AspNetCore.Mvc;

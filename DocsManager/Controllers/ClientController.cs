@@ -1,10 +1,7 @@
-using System.Security.Claims;
 using DocsManager.Models;
 using DocsManager.Models.Dto;
 using DocsManager.Services.Client;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DocsManager.Controllers;
 
