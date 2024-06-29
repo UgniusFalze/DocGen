@@ -3,6 +3,7 @@ using DocsManager.Models;
 using DocsManager.Services.Client;
 using DocsManager.Services.IntegerToWordsConverter;
 using DocsManager.Services.Invoice;
+using DocsManager.Services.User;
 using DocsManager.Utils.DocsGenerator;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -125,6 +126,7 @@ public class DocManagerAppBuilder
         _applicationBuilder.Services.AddScoped<IntegerToWordsConverter, LithuanianIntegerToWords>();
         _applicationBuilder.Services.AddScoped<IClientService, ClientService>();
         _applicationBuilder.Services.AddScoped<IInvoiceService, InvoiceService>();
+        _applicationBuilder.Services.AddScoped<IUserService, UserService>();
         return this;
     }
 

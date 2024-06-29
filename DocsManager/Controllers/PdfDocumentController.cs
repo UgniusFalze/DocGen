@@ -13,20 +13,11 @@ namespace DocsManager.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
 public class PdfDocumentController(
     IPdfGenerator pdfGenerator,
-    DocsManagementContext _docsManagementContext,
     IInvoiceService invoiceService,
-    IntegerToWordsConverter itwc) : ControllerBase
+    IntegerToWordsConverter itwc) : ControllerWithUser
 {
-    private Guid? GetUserGuid()
-    {
-        var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (user == null) return null;
-
-        return Guid.Parse(user);
-    }
 
     [HttpGet("downloadFile")]
     public async Task<IActionResult> DownloadFile(int invoiceId)

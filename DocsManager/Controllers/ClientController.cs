@@ -8,19 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DocsManager.Controllers;
 
-[Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class ClientController(IClientService clientService) : ControllerBase
+public class ClientController(IClientService clientService) : ControllerWithUser
 {
-    private Guid? GetUserGuid()
-    {
-        var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (user == null) return null;
-
-        return Guid.Parse(user);
-    }
-
     
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Client>>> GetClients([FromQuery(Name = "page")] int page)
