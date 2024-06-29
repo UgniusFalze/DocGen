@@ -9,19 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DocsManager.Controllers;
-[Authorize]
+
 [Route("api/[controller]")]
 [ApiController]
-public class InvoiceController(IInvoiceService invoiceService) : ControllerBase
+public class InvoiceController(IInvoiceService invoiceService) : ControllerWithUser
 {
-    private Guid? GetUserGuid()
-    {
-        var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (user == null) return null;
-
-        return Guid.Parse(user);
-    }
-    
     [HttpGet]
     public async Task<ActionResult<InvoicesGridDto>> GetInvoices()
     {
