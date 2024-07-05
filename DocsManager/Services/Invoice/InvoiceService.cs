@@ -7,9 +7,14 @@ namespace DocsManager.Services.Invoice;
 
 public class InvoiceService (DocsManagementContext context, IntegerToWordsConverter.IntegerToWordsConverter itwc) : IInvoiceService
 {
-    public async Task<InvoicesGridDto> GetInvoiceForGrid(Guid userId)
+    private const int InvoicePageSize = 10;
+    public async Task<InvoicesGridDto> GetInvoiceForGrid(Guid userId, int page)
     {
+        page *= InvoicePageSize;
         var invoices = await context.Invoices
+            .OrderBy(x => x.InvoiceId)
+            .Skip(page)
+            .Take(InvoicePageSize)
             .Where(invoice => invoice.InvoiceUserId == userId)
             .Select(x =>
                 new InvoiceListDto(

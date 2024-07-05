@@ -11,7 +11,7 @@ public class ClientService(DocsManagementContext context) : IClientService
     public async Task<IEnumerable<Models.Client>> GetClients(int page)
     {
         page *= ClientPageSize;
-        var clients = context.Clients.Skip(page).Take(ClientPageSize).ToListAsync();
+        var clients = context.Clients.OrderBy(client => client.ClientId).Skip(page).Take(ClientPageSize).ToListAsync();
         return await clients;
     }
 
