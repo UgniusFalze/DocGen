@@ -10,12 +10,12 @@ namespace DocsManager.Controllers;
 public class InvoiceController(IInvoiceService invoiceService) : ControllerWithUser
 {
     [HttpGet]
-    public async Task<ActionResult<InvoicesGridDto>> GetInvoices()
+    public async Task<ActionResult<InvoicesGridDto>> GetInvoices([FromQuery(Name = "page")] int page)
     {
         var user = GetUserGuid();
 
         if (user == null) return NotFound("User not found");
-        return Ok(await invoiceService.GetInvoiceForGrid(user.Value));
+        return Ok(await invoiceService.GetInvoiceForGrid(user.Value, page));
     }
     
     [HttpGet("{id}")]

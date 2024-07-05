@@ -10,7 +10,7 @@ public class ClientServiceTest : BaseTest
     public async Task Test_Correctly_Returns_Gets_Paged_Clients()
     {
         var clientService = GetService();
-        var client = await clientService.GetClients(1);
+        var client = await clientService.GetClients(0);
         Assert.That(client.Count(), Is.EqualTo(10));
     }
     [NonParallelizable]

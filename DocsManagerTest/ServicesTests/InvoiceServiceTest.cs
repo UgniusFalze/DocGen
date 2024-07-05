@@ -9,12 +9,13 @@ public class InvoiceServiceTest : BaseTest
 {   
     [Test]
     [NonParallelizable]
-    [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 32716.7, new[] {1, 2})]
-    public async Task Test_Gets_Users_Mapped_Invoices(string userId, decimal totalSum, int[] seriesNumbers)
+    [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 32716.7, new[] {1, 2}, 0)]
+    [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 0, new int[0], 1)]
+    public async Task Test_Gets_Users_Mapped_Invoices(string userId, decimal totalSum, int[] seriesNumbers, int page )
     {
         var guid = Guid.Parse(userId);
         var service = GetService();
-        var result = await service.GetInvoiceForGrid(guid);
+        var result = await service.GetInvoiceForGrid(guid, page);
         Assert.Multiple(() =>
         {
             Assert.That(result.InvoicesTotal, Is.EqualTo(totalSum));
