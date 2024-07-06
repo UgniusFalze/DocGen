@@ -27,7 +27,7 @@ public class User(IUserService userService) : ControllerWithUser
         var surName = User.FindFirstValue(ClaimTypes.Surname);
         if (user == null || userName == null || surName == null) return NotFound("User not found");
 
-        var result = await userService.UpdateUser(user.Value, userPost, userName, surName);
+        var result = await userService.InsertUser(user.Value, userPost, userName, surName);
         
         return result ? StatusCode(StatusCodes.Status201Created) : BadRequest("User is already created");
     }
