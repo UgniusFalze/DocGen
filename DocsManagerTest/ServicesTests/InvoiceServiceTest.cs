@@ -25,6 +25,18 @@ public class InvoiceServiceTest : BaseTest
     
     [Test]
     [NonParallelizable]
+    [TestCase("40cf7e27-5de2-4251-b030-9e0335803c58", 5)]
+    [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 2)]
+    [TestCase("53c09e09-eea1-49b5-ab81-26ff78740b7d", 0)]
+    public async Task Test_Gets_Users_Invoice_Total_Count(string userId, int count) {
+        var service = GetService();
+        var guid = Guid.Parse(userId);
+        var result = await service.GetInvoiceCount(guid);
+        Assert.That(result, Is.EqualTo(count));
+    }
+    
+    [Test]
+    [NonParallelizable]
     [TestCase(4, "40cf7e27-5de2-4251-b030-9e0335803c58", "0,09", "Test User")]
     [TestCase(2, "e255553a-1ce4-4f32-9c56-276b24096a4e", "5,00", "Real User")]
     public async Task Test_Gets_Invoice_With_Id_And_User(int id, string userId, string totalMoney, string name)

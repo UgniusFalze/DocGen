@@ -184,6 +184,12 @@ public class InvoiceService (DocsManagementContext context, IntegerToWordsConver
         return true;
     }
     
+    public async Task<int> GetInvoiceCount(Guid userId)
+    {
+        var count = await context.Invoices.Where(invoice => invoice.InvoiceUserId == userId).CountAsync();
+        return count;
+    }
+    
     private bool InvoiceExists(int id)
     {
         return context.Invoices.Any(e => e.InvoiceId == id);
