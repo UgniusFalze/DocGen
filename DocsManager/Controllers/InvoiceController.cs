@@ -81,5 +81,13 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         if (user == null) return NotFound("User not found");
         var result = await invoiceService.SetPayed(id, isPayed, user.Value);
         return result ? NoContent() : NotFound("Invoice not found");
-    }   
+    }
+    
+    [HttpGet("count")]
+    public async Task<ActionResult<int>> GetInvoiceCount(){
+        var user = GetUserGuid();
+        if (user == null) return NotFound("User not found");
+        var result = await invoiceService.GetInvoiceCount(user.Value);
+        return result;
+    }
 }
