@@ -4,7 +4,7 @@ namespace DocsManager.Services.Client;
 
 public interface IClientService
 {
-    public Task<IEnumerable<Models.Client>> GetClients(int page);
+    public Task<IEnumerable<Models.Client>> GetClients(int page, string? search);
 
     public Task<IEnumerable<ClientDTO>> GetSelectableClients();
 

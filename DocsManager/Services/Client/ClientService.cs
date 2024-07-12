@@ -8,11 +8,16 @@ public class ClientService(DocsManagementContext context) : IClientService
 {
     private const int ClientPageSize = 10;
 
-    public async Task<IEnumerable<Models.Client>> GetClients(int page)
+    public async Task<IEnumerable<Models.Client>> GetClients(int page, string? search)
     {
         page *= ClientPageSize;
-        var clients = context.Clients.OrderBy(client => client.ClientId).Skip(page).Take(ClientPageSize).ToListAsync();
-        return await clients;
+        IQueryable<Models.Client> clients = context.Clients;
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            clients = clients.Where(x => x.BuyerName.ToLower().Contains(search.ToLower()));
+        };
+        clients = clients.OrderBy(client => client.ClientId).Skip(page).Take(ClientPageSize);
+        return await clients.ToListAsync();
     }
 
     public async Task<IEnumerable<ClientDTO>> GetSelectableClients()

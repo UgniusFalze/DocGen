@@ -10,9 +10,20 @@ public class ClientServiceTest : BaseTest
     public async Task Test_Correctly_Returns_Gets_Paged_Clients()
     {
         var clientService = GetService();
-        var client = await clientService.GetClients(0);
+        var client = await clientService.GetClients(0, null);
         Assert.That(client.Count(), Is.EqualTo(10));
     }
+    
+    [Test]
+    [NonParallelizable]
+    [TestCase("Pan", "Panam")]
+    [TestCase("che", "Nitzsche?")]
+    public async Task Test_Correctly_Filters_Clients(string search, string fullName) {
+        var clientService = GetService();
+        var client = await clientService.GetClients(0, search);
+        Assert.That(client.First().BuyerName, Is.EqualTo(fullName));
+    }
+    
     [NonParallelizable]
     [TestCase(1, "NameOaa")]
     [TestCase(7, "Au/ra")]
