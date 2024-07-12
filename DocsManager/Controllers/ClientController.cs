@@ -11,9 +11,9 @@ public class ClientController(IClientService clientService) : ControllerWithUser
 {
     
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Client>>> GetClients([FromQuery(Name = "page")] int page)
+    public async Task<ActionResult<IEnumerable<Client>>> GetClients([FromQuery(Name = "page")] int page, [FromQuery(Name = "search")] string? search)
     {
-        return Ok(await clientService.GetClients(page));
+        return Ok(await clientService.GetClients(page, search));
     }
 
     [HttpGet("select")]

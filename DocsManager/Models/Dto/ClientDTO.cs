@@ -4,10 +4,10 @@ public record ClientDTO
 {
     public ClientDTO(int clientId, string clientName)
     {
-        ClientId = clientId;
-        ClientName = clientName;
+        Id = clientId;
+        Label = clientName;
     }
 
-    public int ClientId { get; }
-    public string ClientName { get; }
+    public int Id { get; }
+    public string Label { get; }
 }
