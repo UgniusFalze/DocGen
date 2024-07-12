@@ -12,10 +12,10 @@ public class InvoiceService (DocsManagementContext context, IntegerToWordsConver
     {
         page *= InvoicePageSize;
         var invoices = await context.Invoices
+            .Where(invoice => invoice.InvoiceUserId == userId)
             .OrderBy(x => x.InvoiceId)
             .Skip(page)
             .Take(InvoicePageSize)
-            .Where(invoice => invoice.InvoiceUserId == userId)
             .Select(x =>
                 new InvoiceListDto(
                     x.SeriesNumber,

@@ -1,6 +1,7 @@
 using DocsManager.Models;
 using DocsManager.Models.Dto;
 using DocsManager.Services.Client;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocsManager.Controllers;
