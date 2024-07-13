@@ -57,7 +57,7 @@ public class ClientController(IClientService clientService) : ControllerWithUser
         {
             ClientDeleteResult.Success => NoContent(),
             ClientDeleteResult.NoClient => NotFound("Client not found"),
-            ClientDeleteResult.HasNonUserInvoices => UnprocessableEntity(),
+            ClientDeleteResult.HasNonUserInvoices => UnprocessableEntity("Client has non-user invoices"),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
