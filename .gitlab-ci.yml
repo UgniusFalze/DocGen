@@ -1,6 +1,7 @@
 stages:          
   - test
   - build
+  - deploy
 
 nunit:
   services:
@@ -21,6 +22,10 @@ nunit:
   rules:
   - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 
+variables:
+  CONTAINER_BUILD_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
+
 build-image:
   stage: build
   image: docker:20.10.10
@@ -30,5 +35,21 @@ build-image:
    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
-    - docker build -t $CI_REGISTRY_IMAGE .
-    - docker push $CI_REGISTRY_IMAGE
+    - docker build -t $CONTAINER_BUILD_IMAGE .
+    - docker push $CONTAINER_BUILD_IMAGE
+
+release:
+  stage: deploy
+  image: docker:20.10.10
+  services:
+    - docker:20.10.10-dind
+  needs:
+    - build-image
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+    - docker pull $CONTAINER_BUILD_IMAGE
+    - docker tag $CONTAINER_BUILD_IMAGE $CONTAINER_RELEASE_IMAGE
+    - docker push $CONTAINER_RELEASE_IMAGE
+  
