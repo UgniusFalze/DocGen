@@ -56,17 +56,11 @@ public class DocManagerAppBuilder
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
                     RoleClaimType = "groups",
-                    ValidateIssuerSigningKey = false,
-                    SignatureValidator = delegate(string token, TokenValidationParameters parameters)
-                    {
-                        var jwt = new JsonWebToken(token);
-
-                        return jwt;
-                    },
                     ValidateIssuer = true,
                     ValidateLifetime = true,
                     ValidIssuer = _applicationConfig["auth:authorityServer"],
-                    ValidateAudience = false
+                    ValidateAudience = true,
+                    ValidAudience = _applicationConfig["auth:validAudience"],
                 };
             });
 
