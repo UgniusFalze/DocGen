@@ -54,16 +54,16 @@ public class ClientServiceTest : BaseTest
         var clientService = GetService();
         var clientInsert = new Client(){BuyerAddress = "123 Main Street", BuyerCode = "9999", BuyerName = "John Doe"};
         var insertResult = await clientService.InsertClient(clientInsert);
-        Assert.That(insertResult, Is.Not.Null);
+        Assert.That(insertResult.IsFailed, Is.False);
     }
     
     [NonParallelizable]
     [Test]
-    public async Task Test_Returns_Null_On_Duplication() {
+    public async Task Test_Returns_Failure_On_Duplication() {
         var clientService = GetService();
         var clientInsert = new Client(){BuyerAddress = "123 Main Street", BuyerCode = "557", BuyerName = "John Doe"};
         var insertResult = await clientService.InsertClient(clientInsert);
-        Assert.That(insertResult, Is.Null);
+        Assert.That(insertResult.IsSuccess, Is.False);
     }
 
     private ClientService GetService()

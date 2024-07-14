@@ -74,8 +74,8 @@ public class ClientController(IClientService clientService) : ControllerWithUser
     public async Task<ActionResult<Client>> PostClient(Client client)
     {
         var insertClient = await clientService.InsertClient(client);
-        if (insertClient == null) return UnprocessableEntity("Client with this code already exists");
-        return CreatedAtAction("GetClient", new { id = insertClient.ClientId }, insertClient);
+        if (insertClient.IsFailed) return UnprocessableEntity(insertClient.Errors.First().Message);
+        return CreatedAtAction("GetClient", new { id = insertClient.Value.ClientId }, insertClient);
     }
 
     /// <summary>

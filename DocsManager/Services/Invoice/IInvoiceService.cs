@@ -1,4 +1,5 @@
 using DocsManager.Models.Dto;
+using FluentResults;
 
 namespace DocsManager.Services.Invoice;
 
@@ -10,7 +11,7 @@ public interface IInvoiceService
 
     public Task<InvoiceDto?> GetInvoice(int id, Guid userId);
 
-    public Task<Models.Invoice?> InsertInvoice(InvoicePostDto invoicePostDto, Guid userId);
+    public Task<Result<Models.Invoice>> InsertInvoice(InvoicePostDto invoicePostDto, Guid userId);
 
     public Task<bool> DeleteInvoice(int id, Guid userId);
 
