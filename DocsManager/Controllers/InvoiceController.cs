@@ -9,6 +9,13 @@ namespace DocsManager.Controllers;
 [ApiController]
 public class InvoiceController(IInvoiceService invoiceService) : ControllerWithUser
 {
+    /// <summary>
+    /// Gets user invoices
+    /// </summary>
+    /// <param name="page">User invoices paging, each page consists of 10 records</param>
+    /// <returns>User invoices</returns>
+    /// <response code="200">Returns user invoices</response>
+    /// <response code="404">If user is not found</response>
     [HttpGet]
     public async Task<ActionResult<InvoicesGridDto>> GetInvoices([FromQuery(Name = "page")] int page)
     {
@@ -18,6 +25,13 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         return Ok(await invoiceService.GetInvoiceForGrid(user.Value, page));
     }
     
+    /// <summary>
+    /// Gets user invoice based on its series number
+    /// </summary>
+    /// <param name="id">Invoice series number for user</param>
+    /// <returns>Matching invoice</returns>
+    /// <response code="404">If user or invoice is not found</response>
+    /// <response code="200">Returns matching invoice</response>
     [HttpGet("{id}")]
     public async Task<ActionResult<InvoiceDto>> GetInvoice(int id)
     {
@@ -27,6 +41,13 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         return invoice == null ? NotFound("Invoice not found") : Ok(invoice);
     }
     
+    /// <summary>
+    /// Inserts a new invoice
+    /// </summary>
+    /// <param name="invoicePost"></param>
+    /// <returns>Newly created invoice</returns>
+    /// <response code="200">Returns newly created invoice</response>
+    /// <response code="404">If user or provided client is not found</response>
     [HttpPost]
     public async Task<ActionResult<Invoice>> PostInvoice(InvoicePostDto invoicePost)
     {
@@ -37,6 +58,13 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         return result == null ? NotFound("Client or user not found") : CreatedAtAction("GetInvoice", new { id = result.InvoiceId }, result);
     }
     
+    /// <summary>
+    /// Deletes invoice
+    /// </summary>
+    /// <param name="id">Invoice series number</param>
+    /// <returns></returns>
+    /// <response code="204">Invoice was successfully deleted</response>
+    /// <response code="404">If user or invoice is not found</response>
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteInvoice(int id)
     {
@@ -46,7 +74,12 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         return result ? NoContent() : NotFound("Invoice not found");
     }
 
-
+    /// <summary>
+    /// Gets latest invoice's series number
+    /// </summary>
+    /// <returns>Users latest invoice's series number</returns>
+    /// <response code="200">Returns latest invoice number</response>
+    /// <response code="404">If user is not found</response>
     [HttpGet("last")]
     public async Task<ActionResult<int>> GetLatestInvoice()
     {
@@ -56,6 +89,14 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         return result ?? 1;
     }
     
+    /// <summary>
+    /// Inserts a new item for invoice
+    /// </summary>
+    /// <param name="id">Invoice series number</param>
+    /// <param name="itemPost"></param>
+    /// <returns></returns>
+    /// <response code="204">Invoice item was successfully added</response>
+    /// <response code="404">If user or invoice is not found</response>
     [HttpPost("{id}/addItem")]
     public async Task<IActionResult> AddItem(int id, ItemPostDto itemPost)
     {
@@ -65,6 +106,14 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         return result ? NoContent() : NotFound("Invoice not found");
     }
     
+    /// <summary>
+    /// Deletes invoice item
+    /// </summary>
+    /// <param name="id">Invoice series number</param>
+    /// <param name="itemId"></param>
+    /// <returns></returns>
+    /// <response code="204">Invoice item was successfully deleted</response>
+    /// <response code="404">If user or invoice is not found</response>
     [HttpDelete("{id}/deleteItem/{itemId}")]
     public async Task<IActionResult> DeleteItem(int id, int itemId)
     {
@@ -74,6 +123,14 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         return result ? NoContent() : NotFound("Invoice item not found");
     }
     
+    /// <summary>
+    /// Sets invoice paid status
+    /// </summary>
+    /// <param name="id">Invoice series number</param>
+    /// <param name="isPayed"></param>
+    /// <returns></returns>
+    /// <response code="204">Invoice paid status successfully updated</response>
+    /// <response code="404">If user or invoice is not found</response>
     [HttpPost("{id}/setPayed")]
     public async Task<IActionResult> SetPayed(int id, IsPayedDto isPayed)
     {
@@ -83,6 +140,12 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         return result ? NoContent() : NotFound("Invoice not found");
     }
     
+    /// <summary>
+    /// Gets user invoices count
+    /// </summary>
+    /// <returns>Invoice count</returns>
+    /// <response code="200">Return invoices count</response>
+    /// <response code="404">If user is not found</response>
     [HttpGet("count")]
     public async Task<ActionResult<int>> GetInvoiceCount(){
         var user = GetUserGuid();

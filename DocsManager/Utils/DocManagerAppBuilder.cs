@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json.Serialization;
 using DocsManager.Models;
 using DocsManager.Services.Client;
@@ -161,6 +162,8 @@ public class DocManagerAppBuilder
                     new List<string>()
                 }
             });
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
         });
         return this;
     }

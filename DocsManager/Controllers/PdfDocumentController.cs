@@ -14,7 +14,15 @@ public class PdfDocumentController(
     IntegerToWordsConverter itwc) : ControllerWithUser
 {
 
+    /// <summary>
+    /// Gets pdf generated from invoice
+    /// </summary>
+    /// <param name="invoiceId">Invoice series number</param>
+    /// <returns>Generated pdf</returns>
+    /// <response code="200">Returns generated pdf file</response>
+    /// <response code="404">If invoice or user is not found</response>
     [HttpGet("downloadFile")]
+    [Produces("application/pdf")]
     public async Task<IActionResult> DownloadFile(int invoiceId)
     {
         var userId = GetUserGuid();
