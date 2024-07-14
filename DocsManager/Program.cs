@@ -37,4 +37,4 @@ app.UseExceptionHandler("/error");
 
 app.Run();
 
-public partial class Program;
+public partial class Program; //Needed to overwrite database provider for tests

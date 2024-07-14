@@ -4,6 +4,6 @@ Backend application to be used with [invoice management website](https://gitlab.
 ## Requirements
 - [Keycloak](https://www.keycloak.org/) identity server
 - Postgres Database
-- (optional) Logging service, ex: Graylog
+- Logging service, ex: Seq
 ## License
 [MIT License](https://opensource.org/license/MIT)
