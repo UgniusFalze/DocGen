@@ -13,9 +13,8 @@ public class ClientService(DocsManagementContext context) : IClientService
         page *= ClientPageSize;
         IQueryable<Models.Client> clients = context.Clients;
         if (!string.IsNullOrWhiteSpace(search))
-        {
             clients = clients.Where(x => x.BuyerName.ToLower().Contains(search.ToLower()));
-        };
+        ;
         clients = clients.OrderBy(client => client.ClientId).Skip(page).Take(ClientPageSize);
         return await clients.ToListAsync();
     }
@@ -61,10 +60,12 @@ public class ClientService(DocsManagementContext context) : IClientService
     {
         var client = await context.Clients.FindAsync(id);
         if (client == null) return ClientDeleteResult.NoClient;
-        var hasNonUserInvoices = await context.Invoices.AnyAsync(invoice => invoice.InvoiceClientId == id && invoice.InvoiceUserId != userId);
+        var hasNonUserInvoices =
+            await context.Invoices.AnyAsync(invoice =>
+                invoice.InvoiceClientId == id && invoice.InvoiceUserId != userId);
         if (hasNonUserInvoices) return ClientDeleteResult.HasNonUserInvoices;
-        
-        
+
+
         context.Clients.Remove(client);
         await context.SaveChangesAsync();
 
@@ -75,10 +76,9 @@ public class ClientService(DocsManagementContext context) : IClientService
     {
         return context.Clients.Any(e => e.ClientId == id);
     }
-    
+
     public async Task<int> GetClientCount()
     {
         return await context.Clients.CountAsync();
     }
-
 }

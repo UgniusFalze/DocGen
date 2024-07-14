@@ -5,7 +5,7 @@ namespace DocsManager.Services.Invoice;
 public interface IInvoiceService
 {
     public Task<InvoicesGridDto> GetInvoiceForGrid(Guid userId, int page);
-    
+
     public Task<int> GetInvoiceCount(Guid userId);
 
     public Task<InvoiceDto?> GetInvoice(int id, Guid userId);

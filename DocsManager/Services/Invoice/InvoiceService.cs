@@ -5,9 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DocsManager.Services.Invoice;
 
-public class InvoiceService (DocsManagementContext context, IntegerToWordsConverter.IntegerToWordsConverter itwc) : IInvoiceService
+public class InvoiceService(DocsManagementContext context, IntegerToWordsConverter.IntegerToWordsConverter itwc)
+    : IInvoiceService
 {
     private const int InvoicePageSize = 10;
+
     public async Task<InvoicesGridDto> GetInvoiceForGrid(Guid userId, int page)
     {
         page *= InvoicePageSize;
@@ -63,7 +65,7 @@ public class InvoiceService (DocsManagementContext context, IntegerToWordsConver
         var userModel = await context.Users.FindAsync(userId);
         var clientModel = await context.Clients.FindAsync(invoicePostDto.ClientId);
         if (userModel == null || clientModel == null) return null;
-        
+
         var invoice = new Models.Invoice
         {
             InvoiceUser = userModel,
@@ -73,7 +75,7 @@ public class InvoiceService (DocsManagementContext context, IntegerToWordsConver
         };
         context.Invoices.Add(invoice);
         await context.SaveChangesAsync();
-        
+
         foreach (var itemPostDto in invoicePostDto.Items)
         {
             var itemPost = new InvoiceItem
@@ -86,6 +88,7 @@ public class InvoiceService (DocsManagementContext context, IntegerToWordsConver
             };
             context.InvoiceItems.Add(itemPost);
         }
+
         await context.SaveChangesAsync();
 
         return invoice;
@@ -121,10 +124,7 @@ public class InvoiceService (DocsManagementContext context, IntegerToWordsConver
             .Where(invoice => invoice.InvoiceUserId == userId)
             .Where(invoice => invoice.SeriesNumber == id)
             .FirstOrDefaultAsync();
-        if (invoice == null)
-        {
-            return false;
-        }
+        if (invoice == null) return false;
 
         var invoiceItem = new InvoiceItem
         {
@@ -146,15 +146,12 @@ public class InvoiceService (DocsManagementContext context, IntegerToWordsConver
             .Where(invoice => invoice.InvoiceUserId == userId)
             .Where(invoice => invoice.SeriesNumber == id)
             .FirstOrDefaultAsync();
-        if (invoice == null)
-        {
-            return false;
-        }
+        if (invoice == null) return false;
 
         invoice.IsPayed = isPayed.isPayed;
-        
+
         context.Entry(invoice).State = EntityState.Modified;
-        
+
         try
         {
             await context.SaveChangesAsync();
@@ -177,19 +174,19 @@ public class InvoiceService (DocsManagementContext context, IntegerToWordsConver
             .Where(invoiceItem => invoiceItem.Invoice.InvoiceUserId == userId)
             .FirstOrDefaultAsync();
         if (invoiceItem == null) return false;
-        
+
         context.InvoiceItems.Remove(invoiceItem);
         await context.SaveChangesAsync();
 
         return true;
     }
-    
+
     public async Task<int> GetInvoiceCount(Guid userId)
     {
         var count = await context.Invoices.Where(invoice => invoice.InvoiceUserId == userId).CountAsync();
         return count;
     }
-    
+
     private bool InvoiceExists(int id)
     {
         return context.Invoices.Any(e => e.InvoiceId == id);

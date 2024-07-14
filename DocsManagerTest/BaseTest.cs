@@ -1,26 +1,24 @@
 using System.Text;
 using DocGenLibaryTest.factories;
 using DocsManager.Models;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
-using Testcontainers.PostgreSql;
 
 namespace DocGenLibaryTest;
+
 [TestFixture]
 public abstract class BaseTest
 {
-    protected DocsManagementContext DbContext { set; get; }
-    private WebAppIntegrationFactory WebAppIntegrationFactory { get; set; }
     [OneTimeSetUp]
     public async Task InitDatabase()
     {
         WebAppIntegrationFactory = new WebAppIntegrationFactory();
         await WebAppIntegrationFactory.Initialize();
-        DbContext = WebAppIntegrationFactory.Services.CreateScope().ServiceProvider.GetRequiredService<DocsManagementContext>();
+        DbContext = WebAppIntegrationFactory.Services.CreateScope().ServiceProvider
+            .GetRequiredService<DocsManagementContext>();
         await DbContext.Database.MigrateAsync();
     }
+
     [SetUp]
     public async Task PopulateDb()
     {
@@ -34,18 +32,21 @@ public abstract class BaseTest
         await DbContext.Database.ExecuteSqlRawAsync(GetInvoiceItemsPopulateSql());
         DbContext.ChangeTracker.Clear();
     }
-    
+
     [OneTimeTearDown]
     public async Task TearDown()
     {
         await WebAppIntegrationFactory.TearDown();
     }
 
+    protected DocsManagementContext DbContext { set; get; }
+    private WebAppIntegrationFactory WebAppIntegrationFactory { get; set; }
+
     private static string GetPopulateSql(string filePath)
     {
         var baseDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.ToString();
         var path = Path.Combine(baseDirectory, filePath);
-        StreamReader sr = new StreamReader(path);
+        var sr = new StreamReader(path);
         var sql = sr.ReadToEnd();
         return sql;
     }
@@ -54,7 +55,7 @@ public abstract class BaseTest
     {
         return GetPopulateSql("dataPopulation/clientsTest.sql");
     }
-    
+
     private static string GetUserPopulateSql()
     {
         return GetPopulateSql("dataPopulation/userTest.sql");
@@ -64,7 +65,7 @@ public abstract class BaseTest
     {
         return GetPopulateSql("dataPopulation/invoicesTest.sql");
     }
-    
+
     private static string GetInvoiceItemsPopulateSql()
     {
         return GetPopulateSql("dataPopulation/invoicesItemsTest.sql");

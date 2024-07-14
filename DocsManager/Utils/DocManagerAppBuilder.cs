@@ -9,10 +9,10 @@ using DocsManager.Utils.DocsGenerator;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
+using QuestPDF;
 using QuestPDF.Infrastructure;
 using Serilog;
 
@@ -29,16 +29,17 @@ public class DocManagerAppBuilder
         _applicationBuilder = WebApplication.CreateBuilder(args);
         _applicationConfig = _applicationBuilder.Configuration;
     }
-    
+
     public DocManagerAppBuilder ConfigureQuestPdf()
     {
-        QuestPDF.Settings.License = LicenseType.Community;
+        Settings.License = LicenseType.Community;
         return this;
     }
 
     public DocManagerAppBuilder ConfigureLogging()
     {
-        _applicationBuilder.Host.UseSerilog(((context, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(_applicationConfig)));
+        _applicationBuilder.Host.UseSerilog((context, loggerConfiguration) =>
+            loggerConfiguration.ReadFrom.Configuration(_applicationConfig));
         return this;
     }
 
@@ -60,7 +61,7 @@ public class DocManagerAppBuilder
                     ValidateLifetime = true,
                     ValidIssuer = _applicationConfig["auth:authorityServer"],
                     ValidateAudience = true,
-                    ValidAudience = _applicationConfig["auth:validAudience"],
+                    ValidAudience = _applicationConfig["auth:validAudience"]
                 };
             });
 
@@ -77,7 +78,10 @@ public class DocManagerAppBuilder
     public DocManagerAppBuilder ConfigureCors()
     {
         _applicationBuilder.Services.AddCors(options => options.AddPolicy("DocManagerUi",
-            policy => { policy.WithOrigins(_applicationConfig["frontend:server"]).AllowAnyMethod().AllowAnyHeader(); }));
+            policy =>
+            {
+                policy.WithOrigins(_applicationConfig["frontend:server"]).AllowAnyMethod().AllowAnyHeader();
+            }));
         return this;
     }
 
@@ -107,6 +111,7 @@ public class DocManagerAppBuilder
 
             dbstring = builder.ToString();
         }
+
         _applicationBuilder.Services.AddDbContext<DocsManagementContext>(optionsBuilder =>
         {
             optionsBuilder.UseNpgsql(dbstring);
@@ -133,7 +138,7 @@ public class DocManagerAppBuilder
         });
         _applicationBuilder.Services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo() { Title = "DocsManager Swagger", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "DocsManager Swagger", Version = "v1" });
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -166,5 +171,4 @@ public class DocManagerAppBuilder
     {
         return _applicationBuilder.Build();
     }
-    
 }

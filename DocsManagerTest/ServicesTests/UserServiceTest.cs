@@ -15,13 +15,14 @@ public class UserServiceTest : BaseTest
         var service = GetService();
         Assert.That(await service.ValidateUser(uid), Is.EqualTo(expectedResult));
     }
+
     [Test]
     [NonParallelizable]
     [TestCase("40cf7e27-5de2-4251-b030-9e0335803c5a", "Test", "User", true)]
     [TestCase("40cf7e27-5de2-4251-b030-9e0335803c58", "Testaaa", "Userbbb", false)]
-    public async Task Test_Inserts_User(string userId,string userName, string surName, bool expectedResult)
+    public async Task Test_Inserts_User(string userId, string userName, string surName, bool expectedResult)
     {
-        var userPost = new UserPostDto()
+        var userPost = new UserPostDto
         {
             Address = "Test", BankNumber = "111", BankName = "BankName", FreelanceWorkId = "1123", PersonalId = "6146"
         };
@@ -30,7 +31,7 @@ public class UserServiceTest : BaseTest
         var result = await service.InsertUser(uid, userPost, userName, surName);
         Assert.That(result, Is.EqualTo(expectedResult));
     }
-    
+
     [Test]
     [NonParallelizable]
     [TestCase("53c09e09-eea1-49b5-ab81-26ff78740b7d", "Fresh")]
@@ -54,7 +55,7 @@ public class UserServiceTest : BaseTest
         var result = await service.GetUser(guid);
         Assert.That(result, Is.Null);
     }
-    
+
     private UserService GetService()
     {
         return new UserService(DbContext);

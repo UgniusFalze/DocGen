@@ -10,7 +10,7 @@ namespace DocsManager.Controllers;
 public class InvoiceController(IInvoiceService invoiceService) : ControllerWithUser
 {
     /// <summary>
-    /// Gets user invoices
+    ///     Gets user invoices
     /// </summary>
     /// <param name="page">User invoices paging, each page consists of 10 records</param>
     /// <returns>User invoices</returns>
@@ -24,9 +24,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         if (user == null) return NotFound("User not found");
         return Ok(await invoiceService.GetInvoiceForGrid(user.Value, page));
     }
-    
+
     /// <summary>
-    /// Gets user invoice based on its series number
+    ///     Gets user invoice based on its series number
     /// </summary>
     /// <param name="id">Invoice series number for user</param>
     /// <returns>Matching invoice</returns>
@@ -40,9 +40,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         var invoice = await invoiceService.GetInvoice(id, user.Value);
         return invoice == null ? NotFound("Invoice not found") : Ok(invoice);
     }
-    
+
     /// <summary>
-    /// Inserts a new invoice
+    ///     Inserts a new invoice
     /// </summary>
     /// <param name="invoicePost"></param>
     /// <returns>Newly created invoice</returns>
@@ -54,12 +54,14 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         var user = GetUserGuid();
         if (user == null) return NotFound("User not found");
         var result = await invoiceService.InsertInvoice(invoicePost, user.Value);
-        
-        return result == null ? NotFound("Client or user not found") : CreatedAtAction("GetInvoice", new { id = result.InvoiceId }, result);
+
+        return result == null
+            ? NotFound("Client or user not found")
+            : CreatedAtAction("GetInvoice", new { id = result.InvoiceId }, result);
     }
-    
+
     /// <summary>
-    /// Deletes invoice
+    ///     Deletes invoice
     /// </summary>
     /// <param name="id">Invoice series number</param>
     /// <returns></returns>
@@ -75,7 +77,7 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
     }
 
     /// <summary>
-    /// Gets latest invoice's series number
+    ///     Gets latest invoice's series number
     /// </summary>
     /// <returns>Users latest invoice's series number</returns>
     /// <response code="200">Returns latest invoice number</response>
@@ -88,9 +90,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         var result = await invoiceService.GetLatestUserInvoice(user.Value);
         return result ?? 1;
     }
-    
+
     /// <summary>
-    /// Inserts a new item for invoice
+    ///     Inserts a new item for invoice
     /// </summary>
     /// <param name="id">Invoice series number</param>
     /// <param name="itemPost"></param>
@@ -105,9 +107,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         var result = await invoiceService.AddItemToInvoice(id, itemPost, user.Value);
         return result ? NoContent() : NotFound("Invoice not found");
     }
-    
+
     /// <summary>
-    /// Deletes invoice item
+    ///     Deletes invoice item
     /// </summary>
     /// <param name="id">Invoice series number</param>
     /// <param name="itemId"></param>
@@ -122,9 +124,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         var result = await invoiceService.RemoveItemFromInvoice(id, itemId, user.Value);
         return result ? NoContent() : NotFound("Invoice item not found");
     }
-    
+
     /// <summary>
-    /// Sets invoice paid status
+    ///     Sets invoice paid status
     /// </summary>
     /// <param name="id">Invoice series number</param>
     /// <param name="isPayed"></param>
@@ -139,15 +141,16 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         var result = await invoiceService.SetPayed(id, isPayed, user.Value);
         return result ? NoContent() : NotFound("Invoice not found");
     }
-    
+
     /// <summary>
-    /// Gets user invoices count
+    ///     Gets user invoices count
     /// </summary>
     /// <returns>Invoice count</returns>
     /// <response code="200">Return invoices count</response>
     /// <response code="404">If user is not found</response>
     [HttpGet("count")]
-    public async Task<ActionResult<int>> GetInvoiceCount(){
+    public async Task<ActionResult<int>> GetInvoiceCount()
+    {
         var user = GetUserGuid();
         if (user == null) return NotFound("User not found");
         var result = await invoiceService.GetInvoiceCount(user.Value);

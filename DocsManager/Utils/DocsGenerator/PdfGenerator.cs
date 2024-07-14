@@ -1,6 +1,5 @@
 using System.Globalization;
 using DocsManager.Models.Dto;
-using DocsManager.Services.IntegerToWordsConverter;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -94,16 +93,13 @@ public class PdfGenerator : IPdfGenerator
                                     .Item()
                                     .Text("Įmonės kodas: " + invoiceDto.BuyerCode);
                                 if (invoiceDto.VatCode != null)
-                                {
                                     buyerColumn
                                         .Item()
                                         .Text("Įmonės PVM kodas: " + invoiceDto.VatCode);
-                                }
                             });
                         });
                         column.Item().BorderTop(2).BorderBottom(1).Table(table =>
                         {
-
                             IContainer DefaultCellStyle(IContainer container)
                             {
                                 return container
@@ -113,7 +109,11 @@ public class PdfGenerator : IPdfGenerator
                                     .AlignMiddle();
                             }
 
-                            IContainer CellStyle(IContainer container) => DefaultCellStyle(container.BorderTop(1));
+                            IContainer CellStyle(IContainer container)
+                            {
+                                return DefaultCellStyle(container.BorderTop(1));
+                            }
+
                             table.ColumnsDefinition(columns =>
                             {
                                 columns.RelativeColumn();
@@ -135,22 +135,24 @@ public class PdfGenerator : IPdfGenerator
                                 header.Cell().Element(DefaultCellStyle).Text("Suma\n(EUR)").Bold();
                             });
 
-                            for (int i = 0; i < invoiceDto.Products.Count; i++)
+                            for (var i = 0; i < invoiceDto.Products.Count; i++)
                             {
-                                table.Cell().Element(CellStyle).Text((i + 1) + ".");
+                                table.Cell().Element(CellStyle).Text(i + 1 + ".");
                                 table.Cell().Element(CellStyle).Text(invoiceDto.Products[i].Name);
                                 table.Cell().Element(CellStyle).Text(invoiceDto.Products[i].UnitOfMeasurement);
                                 table.Cell().Element(CellStyle).Text(invoiceDto.Products[i].Units);
-                                table.Cell().Element(CellStyle).Text(invoiceDto.Products[i].PriceOfUnit.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT")));
+                                table.Cell().Element(CellStyle).Text(invoiceDto.Products[i].PriceOfUnit
+                                    .ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT")));
                                 table.Cell().Element(CellStyle)
-                                    .Text((invoiceDto.Products[i].PriceOfUnit * invoiceDto.Products[i].Units).ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT")));
+                                    .Text((invoiceDto.Products[i].PriceOfUnit * invoiceDto.Products[i].Units).ToString(
+                                        "N2", CultureInfo.CreateSpecificCulture("lt-LT")));
                             }
-
                         });
                         column.Item().Row(row =>
                         {
                             row.RelativeItem().Text("Suma žodžiais: " + invoiceDto.SumInWords);
-                            row.RelativeItem().AlignRight().Text("Suma iš viso:  " + invoiceDto.TotalMoney + " EUR").Bold();
+                            row.RelativeItem().AlignRight().Text("Suma iš viso:  " + invoiceDto.TotalMoney + " EUR")
+                                .Bold();
                         });
 
                         column.Item().Column(column =>
@@ -170,9 +172,6 @@ public class PdfGenerator : IPdfGenerator
                         });
                     });
             })
-
         );
     }
-    
-    
 }

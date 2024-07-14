@@ -1,4 +1,3 @@
-using DocsManager.Models.Dto;
 using DocsManager.Services.IntegerToWordsConverter;
 
 namespace DocGenLibaryTest;
