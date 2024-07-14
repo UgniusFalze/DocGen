@@ -1,3 +1,4 @@
+using DocsManager.Models;
 using DocsManager.Models.Dto;
 using DocsManager.Services.Client;
 
@@ -45,6 +46,24 @@ public class ClientServiceTest : BaseTest
         var clientService = GetService();
         var deleteResult = await clientService.DeleteClient(id, guid);
         Assert.That(deleteResult, Is.EqualTo(result));
+    }
+    
+    [NonParallelizable]
+    [Test]
+    public async Task Test_Inserts_Client() {
+        var clientService = GetService();
+        var clientInsert = new Client(){BuyerAddress = "123 Main Street", BuyerCode = "9999", BuyerName = "John Doe"};
+        var insertResult = await clientService.InsertClient(clientInsert);
+        Assert.That(insertResult, Is.Not.Null);
+    }
+    
+    [NonParallelizable]
+    [Test]
+    public async Task Test_Returns_Null_On_Duplication() {
+        var clientService = GetService();
+        var clientInsert = new Client(){BuyerAddress = "123 Main Street", BuyerCode = "557", BuyerName = "John Doe"};
+        var insertResult = await clientService.InsertClient(clientInsert);
+        Assert.That(insertResult, Is.Null);
     }
 
     private ClientService GetService()

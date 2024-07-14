@@ -68,10 +68,13 @@ public class ClientController(IClientService clientService) : ControllerWithUser
     /// </summary>
     /// <param name="client"></param>
     /// <returns>A newly created client</returns>
+    /// <response code="200">Returns the created client</response>
+    /// <response code="422">If client with code exists</response>
     [HttpPost]
     public async Task<ActionResult<Client>> PostClient(Client client)
     {
         var insertClient = await clientService.InsertClient(client);
+        if (insertClient == null) return UnprocessableEntity("Client with this code already exists");
         return CreatedAtAction("GetClient", new { id = insertClient.ClientId }, insertClient);
     }
 
