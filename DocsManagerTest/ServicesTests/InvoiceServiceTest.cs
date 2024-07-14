@@ -84,12 +84,12 @@ public class InvoiceServiceTest : BaseTest
         var guid = Guid.Parse(userId);
         var service = GetService();
         var result = await service.InsertInvoice(invoicePost, guid);
-        Assert.That(result, Is.Not.Null);
+        Assert.That(result.IsFailed, Is.False);
         Assert.Multiple(() =>
         {
-            Assert.That(result.InvoiceClientId, Is.EqualTo(clientId));
-            Assert.That(result.SeriesNumber, Is.EqualTo(seriesNumber));
-            Assert.That(result.InvoiceUserId, Is.EqualTo(guid));
+            Assert.That(result.Value.InvoiceClientId, Is.EqualTo(clientId));
+            Assert.That(result.Value.SeriesNumber, Is.EqualTo(seriesNumber));
+            Assert.That(result.Value.InvoiceUserId, Is.EqualTo(guid));
         });
     }
 
@@ -108,7 +108,8 @@ public class InvoiceServiceTest : BaseTest
         var guid = Guid.Parse(userId);
         var service = GetService();
         var result = await service.InsertInvoice(invoicePost, guid);
-        Assert.That(result, Is.Null);
+        Assert.That(result.IsFailed, Is.True);
+        Assert.That(result.Errors.First().Message, Is.EqualTo("User or client does not exist"));
     }
 
     [Test]

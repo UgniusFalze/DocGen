@@ -1,7 +1,9 @@
 using System.Globalization;
 using DocsManager.Models;
 using DocsManager.Models.Dto;
+using FluentResults;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace DocsManager.Services.Invoice;
 
@@ -60,11 +62,11 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
         return invoice;
     }
 
-    public async Task<Models.Invoice?> InsertInvoice(InvoicePostDto invoicePostDto, Guid userId)
+    public async Task<Result<Models.Invoice>> InsertInvoice(InvoicePostDto invoicePostDto, Guid userId)
     {
         var userModel = await context.Users.FindAsync(userId);
         var clientModel = await context.Clients.FindAsync(invoicePostDto.ClientId);
-        if (userModel == null || clientModel == null) return null;
+        if (userModel == null || clientModel == null) return Result.Fail("User or client does not exist");
 
         var invoice = new Models.Invoice
         {
@@ -74,7 +76,21 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
             SeriesNumber = invoicePostDto.SeriesNumber
         };
         context.Invoices.Add(invoice);
-        await context.SaveChangesAsync();
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            if (ex.InnerException is not PostgresException sqlException) throw;
+            if(sqlException.SqlState == "23505")
+            {
+                return Result.Fail("Invoice with invoice number already exists");
+            }
+
+            throw;
+        }
+        
 
         foreach (var itemPostDto in invoicePostDto.Items)
         {
@@ -91,7 +107,7 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
 
         await context.SaveChangesAsync();
 
-        return invoice;
+        return Result.Ok(invoice);
     }
 
     public async Task<bool> DeleteInvoice(int id, Guid userId)

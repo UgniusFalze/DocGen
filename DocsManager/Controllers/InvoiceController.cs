@@ -48,16 +48,25 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
     /// <returns>Newly created invoice</returns>
     /// <response code="200">Returns newly created invoice</response>
     /// <response code="404">If user or provided client is not found</response>
+    /// <response code="422">If invoice with number exists</response>
     [HttpPost]
     public async Task<ActionResult<Invoice>> PostInvoice(InvoicePostDto invoicePost)
     {
         var user = GetUserGuid();
         if (user == null) return NotFound("User not found");
         var result = await invoiceService.InsertInvoice(invoicePost, user.Value);
-
-        return result == null
-            ? NotFound("Client or user not found")
-            : CreatedAtAction("GetInvoice", new { id = result.InvoiceId }, result);
+        if(result.IsFailed)
+        {
+            return result.Errors.First().Message switch
+            {
+                "User or client does not exist" => NotFound("User or client does not exist"),
+                "Invoice with invoice number already exists" => UnprocessableEntity(
+                    "Invoice with invoice number already exists"),
+                _ => Problem("Error")
+            };
+        }else{
+            return Ok(result.Value);
+        }
     }
 
     /// <summary>

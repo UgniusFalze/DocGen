@@ -1,4 +1,5 @@
 using DocsManager.Models.Dto;
+using FluentResults;
 
 namespace DocsManager.Services.Client;
 
@@ -10,7 +11,7 @@ public interface IClientService
 
     public Task<Models.Client?> GetClient(int clientId);
 
-    public Task<Models.Client?> InsertClient(Models.Client client);
+    public Task<Result<Models.Client>> InsertClient(Models.Client client);
 
     public Task<bool> UpdateClient(Models.Client client);
 

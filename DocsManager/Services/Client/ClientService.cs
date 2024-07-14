@@ -1,5 +1,6 @@
 using DocsManager.Models;
 using DocsManager.Models.Dto;
+using FluentResults;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -33,7 +34,7 @@ public class ClientService(DocsManagementContext context) : IClientService
         return client;
     }
 
-    public async Task<Models.Client?> InsertClient(Models.Client client)
+    public async Task<Result<Models.Client>> InsertClient(Models.Client client)
     {
         context.Clients.Add(client);
         try
@@ -43,7 +44,7 @@ public class ClientService(DocsManagementContext context) : IClientService
             if (ex.InnerException is not PostgresException sqlException) throw;
             if(sqlException.SqlState == "23505")
             {
-                return null;
+                return Result.Fail("Client with id already exists");
             }
 
             throw;
