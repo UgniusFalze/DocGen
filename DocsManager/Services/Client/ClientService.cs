@@ -1,6 +1,8 @@
 using DocsManager.Models;
 using DocsManager.Models.Dto;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace DocsManager.Services.Client;
 
@@ -31,10 +33,22 @@ public class ClientService(DocsManagementContext context) : IClientService
         return client;
     }
 
-    public async Task<Models.Client> InsertClient(Models.Client client)
+    public async Task<Models.Client?> InsertClient(Models.Client client)
     {
         context.Clients.Add(client);
-        await context.SaveChangesAsync();
+        try
+        {
+            await context.SaveChangesAsync();
+        }catch(DbUpdateException ex){
+            if (ex.InnerException is not PostgresException sqlException) throw;
+            if(sqlException.SqlState == "23505")
+            {
+                return null;
+            }
+
+            throw;
+        }
+        
         return client;
     }
 

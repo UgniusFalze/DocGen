@@ -14,5 +14,8 @@ public class DocsManagementContext(DbContextOptions<DocsManagementContext> optio
         builder.Entity<Invoice>()
             .Property(b => b.IsPayed)
             .HasDefaultValue(false);
+        builder.Entity<Client>()
+            .HasIndex(c => c.BuyerCode)
+            .IsUnique();
     }
 }

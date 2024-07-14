@@ -10,13 +10,11 @@ public interface IClientService
 
     public Task<Models.Client?> GetClient(int clientId);
 
-    public Task<Models.Client> InsertClient(Models.Client client);
+    public Task<Models.Client?> InsertClient(Models.Client client);
 
     public Task<bool> UpdateClient(Models.Client client);
 
     public Task<ClientDeleteResult> DeleteClient(int id, Guid userId);
-
-    public bool ClientExists(int id);
 
     public Task<int> GetClientCount();
 }
