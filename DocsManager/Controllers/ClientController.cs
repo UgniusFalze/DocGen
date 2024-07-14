@@ -10,19 +10,20 @@ namespace DocsManager.Controllers;
 public class ClientController(IClientService clientService) : ControllerWithUser
 {
     /// <summary>
-    /// Get filtered clients
+    ///     Get filtered clients
     /// </summary>
     /// <param name="page">Client record pagination, each page consists of 10 clients</param>
     /// <param name="search">Search parameter based on clients full name</param>
     /// <returns>Returns clients based on filters</returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Client>>> GetClients([FromQuery(Name = "page")] int page, [FromQuery(Name = "search")] string? search)
+    public async Task<ActionResult<IEnumerable<Client>>> GetClients([FromQuery(Name = "page")] int page,
+        [FromQuery(Name = "search")] string? search)
     {
         return Ok(await clientService.GetClients(page, search));
     }
-    
+
     /// <summary>
-    /// Get all clients with names and ids
+    ///     Get all clients with names and ids
     /// </summary>
     /// <returns>Returns clients with names and ids</returns>
     [HttpGet("select")]
@@ -30,9 +31,9 @@ public class ClientController(IClientService clientService) : ControllerWithUser
     {
         return Ok(await clientService.GetSelectableClients());
     }
-    
+
     /// <summary>
-    /// Gets client from id
+    ///     Gets client from id
     /// </summary>
     /// <param name="id">Id of the client</param>
     /// <returns>Client with specified id</returns>
@@ -45,9 +46,9 @@ public class ClientController(IClientService clientService) : ControllerWithUser
         if (client == null) return NotFound("Client not found");
         return Ok(client);
     }
-    
+
     /// <summary>
-    /// Updates selected client
+    ///     Updates selected client
     /// </summary>
     /// <param name="id">Id of the client</param>
     /// <param name="client"></param>
@@ -60,11 +61,10 @@ public class ClientController(IClientService clientService) : ControllerWithUser
         if (id != client.ClientId) return BadRequest();
         var result = await clientService.UpdateClient(client);
         return result ? NoContent() : NotFound("Client not found");
-
     }
-    
+
     /// <summary>
-    /// Inserts a new client
+    ///     Inserts a new client
     /// </summary>
     /// <param name="client"></param>
     /// <returns>A newly created client</returns>
@@ -74,8 +74,9 @@ public class ClientController(IClientService clientService) : ControllerWithUser
         var insertClient = await clientService.InsertClient(client);
         return CreatedAtAction("GetClient", new { id = insertClient.ClientId }, insertClient);
     }
+
     /// <summary>
-    /// Deletes a client
+    ///     Deletes a client
     /// </summary>
     /// <param name="id">Client id</param>
     /// <returns></returns>
@@ -97,9 +98,9 @@ public class ClientController(IClientService clientService) : ControllerWithUser
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-    
+
     /// <summary>
-    /// Gets client count
+    ///     Gets client count
     /// </summary>
     /// <returns></returns>
     [HttpGet("count")]

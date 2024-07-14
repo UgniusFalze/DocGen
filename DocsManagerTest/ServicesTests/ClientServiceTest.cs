@@ -13,17 +13,18 @@ public class ClientServiceTest : BaseTest
         var client = await clientService.GetClients(0, null);
         Assert.That(client.Count(), Is.EqualTo(10));
     }
-    
+
     [Test]
     [NonParallelizable]
     [TestCase("Pan", "Panam")]
     [TestCase("che", "Nitzsche?")]
-    public async Task Test_Correctly_Filters_Clients(string search, string fullName) {
+    public async Task Test_Correctly_Filters_Clients(string search, string fullName)
+    {
         var clientService = GetService();
         var client = await clientService.GetClients(0, search);
         Assert.That(client.First().BuyerName, Is.EqualTo(fullName));
     }
-    
+
     [NonParallelizable]
     [TestCase(1, "NameOaa")]
     [TestCase(7, "Au/ra")]
@@ -33,8 +34,9 @@ public class ClientServiceTest : BaseTest
         var selectableClients = await clientService.GetSelectableClients();
         Assert.That(selectableClients.Contains(new ClientDTO(clientId, clientName)), Is.EqualTo(true));
     }
+
     [NonParallelizable]
-    [TestCase(3,"40cf7e27-5de2-4251-b030-9e0335803c58", ClientDeleteResult.Success)]
+    [TestCase(3, "40cf7e27-5de2-4251-b030-9e0335803c58", ClientDeleteResult.Success)]
     [TestCase(88, "40cf7e27-5de2-4251-b030-9e0335803c58", ClientDeleteResult.NoClient)]
     [TestCase(4, "e255553a-1ce4-4f32-9c56-276b24096a4e", ClientDeleteResult.HasNonUserInvoices)]
     public async Task Test_Correctly_Deletes_Client(int id, string userId, ClientDeleteResult result)
@@ -46,7 +48,8 @@ public class ClientServiceTest : BaseTest
     }
 
     private ClientService GetService()
-    {;
+    {
+        ;
         return new ClientService(DbContext);
     }
 }

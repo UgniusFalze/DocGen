@@ -1,7 +1,3 @@
-using System.Globalization;
-using System.Text;
-using DocsManager.Services.IntegerToWordsConverter;
-
 namespace DocsManager.Models.Dto;
 
 public class InvoiceDto

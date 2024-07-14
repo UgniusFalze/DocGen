@@ -13,9 +13,8 @@ public class PdfDocumentController(
     IInvoiceService invoiceService,
     IntegerToWordsConverter itwc) : ControllerWithUser
 {
-
     /// <summary>
-    /// Gets pdf generated from invoice
+    ///     Gets pdf generated from invoice
     /// </summary>
     /// <param name="invoiceId">Invoice series number</param>
     /// <returns>Generated pdf</returns>

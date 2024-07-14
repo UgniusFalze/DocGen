@@ -8,8 +8,6 @@ public class ErrorController : ControllerBase
     [ApiExplorerSettings(IgnoreApi = true)]
     public IActionResult HandleError()
     {
-        
         return Problem();
     }
-        
 }

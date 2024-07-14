@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocsManager.Controllers;
+
 [Authorize]
 public abstract class ControllerWithUser : ControllerBase
 {

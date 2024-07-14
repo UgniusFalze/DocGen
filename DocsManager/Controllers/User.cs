@@ -10,7 +10,7 @@ namespace DocsManager.Controllers;
 public class User(IUserService userService) : ControllerWithUser
 {
     /// <summary>
-    /// Validates if user has finished setting up their profile
+    ///     Validates if user has finished setting up their profile
     /// </summary>
     /// <returns>Has user finished setting up</returns>
     /// <response code="200">Returns has user finished setting up profile</response>
@@ -23,9 +23,9 @@ public class User(IUserService userService) : ControllerWithUser
 
         return await userService.ValidateUser(user.Value);
     }
-    
+
     /// <summary>
-    /// Inserts new user profile
+    ///     Inserts new user profile
     /// </summary>
     /// <param name="userPost">User profile</param>
     /// <returns></returns>
@@ -41,12 +41,12 @@ public class User(IUserService userService) : ControllerWithUser
         if (user == null || userName == null || surName == null) return NotFound("User not found");
 
         var result = await userService.InsertUser(user.Value, userPost, userName, surName);
-        
+
         return result ? StatusCode(StatusCodes.Status201Created) : BadRequest("User is already created");
     }
-    
+
     /// <summary>
-    /// Updates users profile
+    ///     Updates users profile
     /// </summary>
     /// <param name="user"></param>
     /// <response code="204">User profile has been updated</response>
@@ -59,12 +59,12 @@ public class User(IUserService userService) : ControllerWithUser
         var surName = User.FindFirstValue(ClaimTypes.Surname);
         if (userGuid is null || userName is null || surName is null) return NotFound("User not found");
         var result = await userService.UpdateUser(userGuid.Value, user, userName, surName);
-        
+
         return result ? NoContent() : NotFound("User not found");
     }
-    
+
     /// <summary>
-    /// Returns current users profile
+    ///     Returns current users profile
     /// </summary>
     /// <returns>Users profile</returns>
     /// <response code="200">Returns users profile</response>

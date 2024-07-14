@@ -6,12 +6,12 @@ using DocsManager.Services.Invoice;
 namespace DocGenLibaryTest.ServicesTests;
 
 public class InvoiceServiceTest : BaseTest
-{   
+{
     [Test]
     [NonParallelizable]
-    [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 32716.7, new[] {1, 2}, 0)]
+    [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 32716.7, new[] { 1, 2 }, 0)]
     [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 0, new int[0], 1)]
-    public async Task Test_Gets_Users_Mapped_Invoices(string userId, decimal totalSum, int[] seriesNumbers, int page )
+    public async Task Test_Gets_Users_Mapped_Invoices(string userId, decimal totalSum, int[] seriesNumbers, int page)
     {
         var guid = Guid.Parse(userId);
         var service = GetService();
@@ -22,25 +22,26 @@ public class InvoiceServiceTest : BaseTest
             Assert.That(result.Invoices.Select(invoice => invoice.InvoiceId), Is.EqualTo(seriesNumbers));
         });
     }
-    
+
     [Test]
     [NonParallelizable]
     [TestCase("40cf7e27-5de2-4251-b030-9e0335803c58", 5)]
     [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 2)]
     [TestCase("53c09e09-eea1-49b5-ab81-26ff78740b7d", 0)]
-    public async Task Test_Gets_Users_Invoice_Total_Count(string userId, int count) {
+    public async Task Test_Gets_Users_Invoice_Total_Count(string userId, int count)
+    {
         var service = GetService();
         var guid = Guid.Parse(userId);
         var result = await service.GetInvoiceCount(guid);
         Assert.That(result, Is.EqualTo(count));
     }
-    
+
     [Test]
     [NonParallelizable]
     [TestCase(4, "40cf7e27-5de2-4251-b030-9e0335803c58", "0,09", "Test User")]
     [TestCase(2, "e255553a-1ce4-4f32-9c56-276b24096a4e", "5,00", "Real User")]
     public async Task Test_Gets_Invoice_With_Id_And_User(int id, string userId, string totalMoney, string name)
-    {        
+    {
         var guid = Guid.Parse(userId);
         var service = GetService();
         var result = await service.GetInvoice(id, guid);
@@ -51,9 +52,8 @@ public class InvoiceServiceTest : BaseTest
             Assert.That(result.TotalMoney, Is.EqualTo(totalMoney));
             Assert.That(result.Name, Is.EqualTo(name));
         });
-        
     }
-    
+
     [Test]
     [NonParallelizable]
     [TestCase(5, "e255553a-1ce4-4f32-9c56-276b24096a4e")]
@@ -66,18 +66,21 @@ public class InvoiceServiceTest : BaseTest
         var guid = Guid.Parse(userId);
         var service = GetService();
         var result = await service.GetInvoice(id, guid);
-        
+
         Assert.That(result, Is.Null);
     }
-    
+
     [Test]
     [NonParallelizable]
     [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 1, 3)]
     public async Task Test_Inserts_Invoice_And_Items_For_User(string userId, int clientId,
         int seriesNumber)
     {
-        var invoicePost = new InvoicePostDto()
-            { ClientId = clientId, InvoiceDate = DateTime.Now.ToString(CultureInfo.CurrentCulture), SeriesNumber = seriesNumber, Items = new List<ItemPostDto>()};
+        var invoicePost = new InvoicePostDto
+        {
+            ClientId = clientId, InvoiceDate = DateTime.Now.ToString(CultureInfo.CurrentCulture),
+            SeriesNumber = seriesNumber, Items = new List<ItemPostDto>()
+        };
         var guid = Guid.Parse(userId);
         var service = GetService();
         var result = await service.InsertInvoice(invoicePost, guid);
@@ -89,7 +92,7 @@ public class InvoiceServiceTest : BaseTest
             Assert.That(result.InvoiceUserId, Is.EqualTo(guid));
         });
     }
-    
+
     [Test]
     [NonParallelizable]
     [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 99, 3)]
@@ -97,14 +100,17 @@ public class InvoiceServiceTest : BaseTest
     public async Task Test_Invoice_Insert_Returns_Null_On_Not_Found(string userId, int clientId,
         int seriesNumber)
     {
-        var invoicePost = new InvoicePostDto()
-            { ClientId = clientId, InvoiceDate = DateTime.Now.ToString(CultureInfo.CurrentCulture), SeriesNumber = seriesNumber, Items = new List<ItemPostDto>()};
+        var invoicePost = new InvoicePostDto
+        {
+            ClientId = clientId, InvoiceDate = DateTime.Now.ToString(CultureInfo.CurrentCulture),
+            SeriesNumber = seriesNumber, Items = new List<ItemPostDto>()
+        };
         var guid = Guid.Parse(userId);
         var service = GetService();
         var result = await service.InsertInvoice(invoicePost, guid);
         Assert.That(result, Is.Null);
     }
-    
+
     [Test]
     [NonParallelizable]
     [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 1, true)]
@@ -119,6 +125,7 @@ public class InvoiceServiceTest : BaseTest
         var result = await service.DeleteInvoice(id, guid);
         Assert.That(result, Is.EqualTo(expectedResult));
     }
+
     [Test]
     [NonParallelizable]
     [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 2)]
@@ -132,16 +139,16 @@ public class InvoiceServiceTest : BaseTest
         var result = await service.GetLatestUserInvoice(guid);
         Assert.That(result, Is.EqualTo(expectedResult));
     }
-    
+
     [Test]
     [NonParallelizable]
-    [TestCase(2,"e255553a-1ce4-4f32-9c56-276b24096a4e", true)]
-    [TestCase(99,"e255553a-1ce4-4f32-9c56-276b24096a4e", false)]
+    [TestCase(2, "e255553a-1ce4-4f32-9c56-276b24096a4e", true)]
+    [TestCase(99, "e255553a-1ce4-4f32-9c56-276b24096a4e", false)]
     [TestCase(5, "40cf7e27-5de2-4251-b030-9e0335803c58", true)]
     [TestCase(5, "40cf7e27-5de2-4251-b030-9e0335803c5a", false)]
     public async Task Test_Adds_Item_To_Invoice(int id, string userId, bool expectedResult)
     {
-        var itemPost = new ItemPostDto() { Name = "Test", PriceOfUnit = 1, UnitOfMeasurement = "vnt", Units = 1 };
+        var itemPost = new ItemPostDto { Name = "Test", PriceOfUnit = 1, UnitOfMeasurement = "vnt", Units = 1 };
         var guid = Guid.Parse(userId);
         var service = GetService();
         var result = await service.AddItemToInvoice(id, itemPost, guid);
@@ -163,7 +170,7 @@ public class InvoiceServiceTest : BaseTest
         var result = await service.SetPayed(id, isPayed, guid);
         Assert.That(result, Is.EqualTo(expectedResult));
     }
-    
+
     [Test]
     [NonParallelizable]
     [TestCase(2, 5, "e255553a-1ce4-4f32-9c56-276b24096a4e", true)]

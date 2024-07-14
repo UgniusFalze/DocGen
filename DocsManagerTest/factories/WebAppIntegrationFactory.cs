@@ -8,7 +8,7 @@ using Testcontainers.PostgreSql;
 
 namespace DocGenLibaryTest.factories;
 
-public class WebAppIntegrationFactory:WebApplicationFactory<Program>
+public class WebAppIntegrationFactory : WebApplicationFactory<Program>
 {
     private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder()
         .WithImage("postgres:15-alpine")
@@ -18,6 +18,7 @@ public class WebAppIntegrationFactory:WebApplicationFactory<Program>
     {
         await _postgreSqlContainer.StartAsync();
     }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureTestServices(services =>
@@ -28,17 +29,13 @@ public class WebAppIntegrationFactory:WebApplicationFactory<Program>
             var descriptor = services
                 .SingleOrDefault(s => s.ServiceType == descriptorType);
 
-            if (descriptor is not null)
-            {
-                services.Remove(descriptor);
-            }
+            if (descriptor is not null) services.Remove(descriptor);
 
             services.AddDbContext<DocsManagementContext>(options =>
                 options
                     .EnableSensitiveDataLogging()
                     .UseNpgsql(_postgreSqlContainer.GetConnectionString()));
         });
-        
     }
 
     public async Task TearDown()

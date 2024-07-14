@@ -4,9 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DocsManager.Services.User;
 
-public class UserService(DocsManagementContext context) :IUserService
+public class UserService(DocsManagementContext context) : IUserService
 {
-
     public async Task<bool> ValidateUser(Guid userId)
     {
         return await context.Users.AnyAsync(cxUser => cxUser.UserId == userId);
@@ -15,7 +14,7 @@ public class UserService(DocsManagementContext context) :IUserService
     public async Task<bool> InsertUser(Guid userId, UserPostDto userPost, string userName, string surName)
     {
         if (await ValidateUser(userId)) return false;
-        
+
         context.Users.Add(new Models.User
         {
             Address = userPost.Address,
@@ -67,5 +66,4 @@ public class UserService(DocsManagementContext context) :IUserService
         var user = await context.Users.FindAsync(userId);
         return user;
     }
-    
 }
