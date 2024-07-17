@@ -1,3 +1,4 @@
+using DocsManager.Controllers.Types;
 using DocsManager.Models.Dto;
 using FluentResults;
 
@@ -9,7 +10,7 @@ public interface IInvoiceService
 
     public Task<int> GetInvoiceCount(Guid userId);
 
-    public Task<InvoiceDto?> GetInvoice(int id, Guid userId);
+    public Task<InvoiceDto?> GetInvoice(int id, BearerUser user);
 
     public Task<Result<Models.Invoice>> InsertInvoice(InvoicePostDto invoicePostDto, Guid userId);
 

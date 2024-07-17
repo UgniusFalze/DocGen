@@ -8,6 +8,7 @@ public class InvoiceDto
     public string Address { get; set; }
     public string PersonalId { get; set; }
     public string FreelanceWorkId { get; set; }
+    public string? UserVatCode { get; set; }
     public string BankNumber { get; set; }
     public string BankName { get; set; }
     public string BuyerName { get; set; }
@@ -18,4 +19,8 @@ public class InvoiceDto
     public string SumInWords { get; set; }
     public string NameWithInitials { get; set; }
     public string TotalMoney { get; set; }
+    public double VatRate { get; set; }
+    public string? Pvm { get; set; }
+    
+    public string? TotalWithoutVat { get; set; }
 }

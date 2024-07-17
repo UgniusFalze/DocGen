@@ -4,7 +4,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-namespace DocsManager.Utils.DocsGenerator;
+namespace DocsManager.Services.DocsGenerator;
 
 public class PdfGenerator : IPdfGenerator
 {
@@ -13,25 +13,34 @@ public class PdfGenerator : IPdfGenerator
         var document = CreateDocument(invoiceDto);
         return document.GeneratePdf();
     }
+    
+    private void CreateHeader(PageDescriptor header, int seriesNumber, string initials, bool isVat)
+    {   
+        var pvm = isVat ? "PVM" : string.Empty;
+        var topText = $"{initials.ToUpper()}{pvm}";
+        header
+            .Header()
+            .Text(x =>
+        {
+            x.DefaultTextStyle(style => style.FontSize(10));
+            x.AlignCenter();
+            x.Line("SĄSKAITA FAKTŪRA");
+            x.Span("Serija ");
+            x.Span(topText).Bold();
+            x.Line(" Nr. " + seriesNumber);
+        });
+    }
 
     private IDocument CreateDocument(InvoiceDto invoiceDto)
     {
+        var isVat = invoiceDto.UserVatCode != null;
         return Document.Create(document =>
             document.Page(page =>
             {
                 page.Size(PageSizes.A4);
                 page.Margin(2, Unit.Centimetre);
                 page.DefaultTextStyle(style => style.FontSize(8).FontFamily("Arial"));
-                page.Header()
-                    .Text(x =>
-                    {
-                        x.DefaultTextStyle(style => style.FontSize(10));
-                        x.AlignCenter();
-                        x.Line("SĄSKAITA FAKTŪRA");
-                        x.Span("Serija ");
-                        x.Span("AV").Bold();
-                        x.Line(" Nr. " + invoiceDto.SeriesNumber);
-                    });
+                CreateHeader(page, invoiceDto.SeriesNumber, invoiceDto.NameWithInitials, isVat);
                 page.Content()
                     .Column(column =>
                     {
@@ -60,9 +69,19 @@ public class PdfGenerator : IPdfGenerator
                                 sellerColumn
                                     .Item()
                                     .Text("Asmens kodas: " + invoiceDto.PersonalId);
-                                sellerColumn
-                                    .Item()
-                                    .Text("Ne PVM mokėtojas");
+                               
+                                if(isVat)
+                                {
+                                    sellerColumn
+                                        .Item()
+                                        .Text("PVM mokėtojo kodas: " + invoiceDto.UserVatCode);
+                                }
+                                else{
+                                    sellerColumn
+                                        .Item()
+                                        .Text("Ne PVM mokėtojas");
+                                }
+                                
                                 sellerColumn
                                     .Item()
                                     .Text("Veikiantis pagal individualios veiklos vykdymo pažymą");
@@ -98,7 +117,9 @@ public class PdfGenerator : IPdfGenerator
                                         .Text("Įmonės PVM kodas: " + invoiceDto.VatCode);
                             });
                         });
-                        column.Item().BorderTop(2).BorderBottom(1).Table(table =>
+                        
+                        
+                        column.Item().BorderTop(2).BorderBottom(isVat ? 0 : 1).Table(table =>
                         {
                             IContainer DefaultCellStyle(IContainer container)
                             {
@@ -113,6 +134,12 @@ public class PdfGenerator : IPdfGenerator
                             {
                                 return DefaultCellStyle(container.BorderTop(1));
                             }
+                            
+                            IContainer SumCellStyle(IContainer container)
+                            {
+                                return DefaultCellStyle(container.Border(1));
+                            }
+                            
 
                             table.ColumnsDefinition(columns =>
                             {
@@ -120,7 +147,7 @@ public class PdfGenerator : IPdfGenerator
                                 columns.ConstantColumn(180);
                                 columns.RelativeColumn();
                                 columns.RelativeColumn();
-                                columns.RelativeColumn();
+                                columns.ConstantColumn(75);
                                 columns.RelativeColumn();
                             });
 
@@ -140,19 +167,66 @@ public class PdfGenerator : IPdfGenerator
                                 table.Cell().Element(CellStyle).Text(i + 1 + ".");
                                 table.Cell().Element(CellStyle).Text(invoiceDto.Products[i].Name);
                                 table.Cell().Element(CellStyle).Text(invoiceDto.Products[i].UnitOfMeasurement);
-                                table.Cell().Element(CellStyle).Text(invoiceDto.Products[i].Units);
+                                table.Cell().Element(CellStyle).Text(invoiceDto.Products[i].Units.ToString());
                                 table.Cell().Element(CellStyle).Text(invoiceDto.Products[i].PriceOfUnit
                                     .ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT")));
-                                table.Cell().Element(CellStyle)
+                                table.Cell().Element(SumCellStyle)
                                     .Text((invoiceDto.Products[i].PriceOfUnit * invoiceDto.Products[i].Units).ToString(
                                         "N2", CultureInfo.CreateSpecificCulture("lt-LT")));
                             }
+                            if(isVat)
+                            {
+                                table.Footer(footer =>
+                                {
+                                    footer.Cell().ColumnSpan(4).BorderTop(1);
+                                    footer
+                                        .Cell()
+                                        .Element(CellStyle)
+                                        .Text("Be PVM")
+                                        .Bold();
+                                    footer
+                                        .Cell()
+                                        .BorderLeft(1)
+                                        .BorderTop(1)
+                                        .BorderRight(1)
+                                        .Element(CellStyle)
+                                        .Text(invoiceDto.TotalWithoutVat);
+                                    footer.Cell().ColumnSpan(4);
+                                    footer
+                                        .Cell()
+                                        .Element(DefaultCellStyle)
+                                        .Text($"PVM {invoiceDto.VatRate * 100} proc.")
+                                        .Bold();
+                                    footer
+                                        .Cell()
+                                        .Border(1)
+                                        .Element(CellStyle)
+                                        .Text(invoiceDto.Pvm);
+                                    footer.Cell().ColumnSpan(4);
+                                    footer
+                                        .Cell()
+                                        .Element(DefaultCellStyle)
+                                        .Text("Suma iš viso")
+                                        .Bold();
+                                    footer
+                                        .Cell()
+                                        .Border(1)
+                                        .Element(CellStyle)
+                                        .Text(invoiceDto.TotalMoney)
+                                        .Bold();
+                                });
+                            }
+                            
                         });
                         column.Item().Row(row =>
                         {
                             row.RelativeItem().Text("Suma žodžiais: " + invoiceDto.SumInWords);
-                            row.RelativeItem().AlignRight().Text("Suma iš viso:  " + invoiceDto.TotalMoney + " EUR")
+                            if(!isVat)
+                            {
+                                row.RelativeItem().AlignRight().Text("Suma iš viso:  " + invoiceDto.TotalMoney + " EUR")
                                 .Bold();
+                            }
+                            
                         });
 
                         column.Item().Column(column =>

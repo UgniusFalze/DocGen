@@ -34,15 +34,15 @@ public class UserServiceTest : BaseTest
 
     [Test]
     [NonParallelizable]
-    [TestCase("53c09e09-eea1-49b5-ab81-26ff78740b7d", "Fresh")]
-    [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", "Real")]
-    public async Task Test_Returns_User_Info(string userId, string userName)
+    [TestCase("53c09e09-eea1-49b5-ab81-26ff78740b7d", "FR35H")]
+    [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", "R3AL")]
+    public async Task Test_Returns_User_Info(string userId, string personalId)
     {
         var service = GetService();
         var guid = Guid.Parse(userId);
         var result = await service.GetUser(guid);
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.FirstName, Is.EqualTo(userName));
+        Assert.That(result.PersonalId, Is.EqualTo(personalId));
     }
 
     [Test]

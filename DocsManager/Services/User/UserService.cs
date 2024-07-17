@@ -20,11 +20,10 @@ public class UserService(DocsManagementContext context) : IUserService
             Address = userPost.Address,
             BankName = userPost.BankName,
             BankNumber = userPost.BankNumber,
-            FirstName = userName,
-            LastName = surName,
             FreelanceWorkId = userPost.FreelanceWorkId,
             PersonalId = userPost.PersonalId,
-            UserId = userId
+            UserId = userId,
+            VatCode = userPost.VatCode == "" ? null : userPost.VatCode,
         });
 
         await context.SaveChangesAsync();
@@ -36,13 +35,12 @@ public class UserService(DocsManagementContext context) : IUserService
         var modifiedUser = new Models.User
         {
             UserId = userId,
-            FirstName = userName,
-            LastName = surName,
             Address = userPost.Address,
             BankName = userPost.BankName,
             BankNumber = userPost.BankNumber,
             FreelanceWorkId = userPost.FreelanceWorkId,
-            PersonalId = userPost.PersonalId
+            PersonalId = userPost.PersonalId,
+            VatCode = userPost.VatCode == "" ? null : userPost.VatCode,
         };
 
         context.Entry(modifiedUser).State = EntityState.Modified;
