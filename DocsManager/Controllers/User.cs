@@ -18,10 +18,10 @@ public class User(IUserService userService) : ControllerWithUser
     [HttpGet("valid")]
     public async Task<ActionResult<bool>> ValidateRegisteredUser()
     {
-        var user = GetUserGuid();
+        var user = GetCurrentUser();
         if (user == null) return NotFound("User not found");
 
-        return await userService.ValidateUser(user.Value);
+        return await userService.ValidateUser(user.Value.UserId);
     }
 
     /// <summary>
@@ -35,12 +35,12 @@ public class User(IUserService userService) : ControllerWithUser
     [HttpPost]
     public async Task<ActionResult> PostUser(UserPostDto userPost)
     {
-        var user = GetUserGuid();
+        var user = GetCurrentUser();
         var userName = User.FindFirstValue(ClaimTypes.GivenName);
         var surName = User.FindFirstValue(ClaimTypes.Surname);
         if (user == null || userName == null || surName == null) return NotFound("User not found");
 
-        var result = await userService.InsertUser(user.Value, userPost, userName, surName);
+        var result = await userService.InsertUser(user.Value.UserId, userPost, userName, surName);
 
         return result ? StatusCode(StatusCodes.Status201Created) : BadRequest("User is already created");
     }
@@ -54,11 +54,11 @@ public class User(IUserService userService) : ControllerWithUser
     [HttpPut]
     public async Task<IActionResult> PutUser(UserPostDto user)
     {
-        var userGuid = GetUserGuid();
+        var userGuid = GetCurrentUser();
         var userName = User.FindFirstValue(ClaimTypes.GivenName);
         var surName = User.FindFirstValue(ClaimTypes.Surname);
         if (userGuid is null || userName is null || surName is null) return NotFound("User not found");
-        var result = await userService.UpdateUser(userGuid.Value, user, userName, surName);
+        var result = await userService.UpdateUser(userGuid.Value.UserId, user, userName, surName);
 
         return result ? NoContent() : NotFound("User not found");
     }
@@ -72,9 +72,9 @@ public class User(IUserService userService) : ControllerWithUser
     [HttpGet]
     public async Task<ActionResult<Models.User>> GetUser()
     {
-        var userGuid = GetUserGuid();
+        var userGuid = GetCurrentUser();
         if (userGuid == null) return NotFound("User not found");
-        var result = await userService.GetUser(userGuid.Value);
+        var result = await userService.GetUser(userGuid.Value.UserId);
         if (result == null) return NotFound("User not found");
         return result;
     }

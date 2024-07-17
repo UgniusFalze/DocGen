@@ -19,10 +19,10 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
     [HttpGet]
     public async Task<ActionResult<InvoicesGridDto>> GetInvoices([FromQuery(Name = "page")] int page)
     {
-        var user = GetUserGuid();
+        var user = GetCurrentUser();
 
         if (user == null) return NotFound("User not found");
-        return Ok(await invoiceService.GetInvoiceForGrid(user.Value, page));
+        return Ok(await invoiceService.GetInvoiceForGrid(user.Value.UserId, page));
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
     [HttpGet("{id}")]
     public async Task<ActionResult<InvoiceDto>> GetInvoice(int id)
     {
-        var user = GetUserGuid();
+        var user = GetCurrentUser();
         if (user == null) return NotFound("User not found");
         var invoice = await invoiceService.GetInvoice(id, user.Value);
         return invoice == null ? NotFound("Invoice not found") : Ok(invoice);
@@ -52,9 +52,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
     [HttpPost]
     public async Task<ActionResult<Invoice>> PostInvoice(InvoicePostDto invoicePost)
     {
-        var user = GetUserGuid();
+        var user = GetCurrentUser();
         if (user == null) return NotFound("User not found");
-        var result = await invoiceService.InsertInvoice(invoicePost, user.Value);
+        var result = await invoiceService.InsertInvoice(invoicePost, user.Value.UserId);
         if(result.IsFailed)
         {
             return result.Errors.First().Message switch
@@ -79,9 +79,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteInvoice(int id)
     {
-        var user = GetUserGuid();
+        var user = GetCurrentUser();
         if (user == null) return NotFound("User not found");
-        var result = await invoiceService.DeleteInvoice(id, user.Value);
+        var result = await invoiceService.DeleteInvoice(id, user.Value.UserId);
         return result ? NoContent() : NotFound("Invoice not found");
     }
 
@@ -94,9 +94,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
     [HttpGet("last")]
     public async Task<ActionResult<int>> GetLatestInvoice()
     {
-        var user = GetUserGuid();
+        var user = GetCurrentUser();
         if (user == null) return NotFound("User not found");
-        var result = await invoiceService.GetLatestUserInvoice(user.Value);
+        var result = await invoiceService.GetLatestUserInvoice(user.Value.UserId);
         return result ?? 1;
     }
 
@@ -111,9 +111,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
     [HttpPost("{id}/addItem")]
     public async Task<IActionResult> AddItem(int id, ItemPostDto itemPost)
     {
-        var user = GetUserGuid();
+        var user = GetCurrentUser();
         if (user == null) return NotFound("User not found");
-        var result = await invoiceService.AddItemToInvoice(id, itemPost, user.Value);
+        var result = await invoiceService.AddItemToInvoice(id, itemPost, user.Value.UserId);
         return result ? NoContent() : NotFound("Invoice not found");
     }
 
@@ -128,9 +128,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
     [HttpDelete("{id}/deleteItem/{itemId}")]
     public async Task<IActionResult> DeleteItem(int id, int itemId)
     {
-        var user = GetUserGuid();
+        var user = GetCurrentUser();
         if (user == null) return NotFound("User not found");
-        var result = await invoiceService.RemoveItemFromInvoice(id, itemId, user.Value);
+        var result = await invoiceService.RemoveItemFromInvoice(id, itemId, user.Value.UserId);
         return result ? NoContent() : NotFound("Invoice item not found");
     }
 
@@ -145,9 +145,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
     [HttpPost("{id}/setPayed")]
     public async Task<IActionResult> SetPayed(int id, IsPayedDto isPayed)
     {
-        var user = GetUserGuid();
+        var user = GetCurrentUser();
         if (user == null) return NotFound("User not found");
-        var result = await invoiceService.SetPayed(id, isPayed, user.Value);
+        var result = await invoiceService.SetPayed(id, isPayed, user.Value.UserId);
         return result ? NoContent() : NotFound("Invoice not found");
     }
 
@@ -160,9 +160,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
     [HttpGet("count")]
     public async Task<ActionResult<int>> GetInvoiceCount()
     {
-        var user = GetUserGuid();
+        var user = GetCurrentUser();
         if (user == null) return NotFound("User not found");
-        var result = await invoiceService.GetInvoiceCount(user.Value);
+        var result = await invoiceService.GetInvoiceCount(user.Value.UserId);
         return result;
     }
 }

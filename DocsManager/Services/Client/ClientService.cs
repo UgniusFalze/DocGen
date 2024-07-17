@@ -36,6 +36,7 @@ public class ClientService(DocsManagementContext context) : IClientService
 
     public async Task<Result<Models.Client>> InsertClient(Models.Client client)
     {
+        client.VatCode  = client.VatCode == "" ? null : client.VatCode;
         context.Clients.Add(client);
         try
         {
@@ -55,6 +56,7 @@ public class ClientService(DocsManagementContext context) : IClientService
 
     public async Task<bool> UpdateClient(Models.Client client)
     {
+        client.VatCode  = client.VatCode == "" ? null : client.VatCode;
         context.Entry(client).State = EntityState.Modified;
 
         try

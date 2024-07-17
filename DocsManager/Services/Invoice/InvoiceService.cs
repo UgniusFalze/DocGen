@@ -1,16 +1,19 @@
 using System.Globalization;
+using DocsManager.Controllers.Types;
 using DocsManager.Models;
 using DocsManager.Models.Dto;
+using DocsManager.Services.User;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace DocsManager.Services.Invoice;
 
-public class InvoiceService(DocsManagementContext context, IntegerToWordsConverter.IntegerToWordsConverter itwc)
+public class InvoiceService(DocsManagementContext context, IntegerToWordsConverter.IntegerToWordsConverter itwc, IUserService userService)
     : IInvoiceService
 {
     private const int InvoicePageSize = 10;
+    private const double VatRate = 0.21;
 
     public async Task<InvoicesGridDto> GetInvoiceForGrid(Guid userId, int page)
     {
@@ -32,10 +35,10 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
         return new InvoicesGridDto(invoices, sum);
     }
 
-    public async Task<InvoiceDto?> GetInvoice(int id, Guid userId)
+    public async Task<InvoiceDto?> GetInvoice(int id, BearerUser user)
     {
         var invoice = await context.Invoices
-            .Where(invoice => invoice.InvoiceUserId == userId)
+            .Where(invoice => invoice.InvoiceUserId == user.UserId)
             .Where(invoice => invoice.SeriesNumber == id)
             .Select(x => new InvoiceDto
             {
@@ -50,15 +53,28 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
                 PersonalId = x.InvoiceUser.PersonalId,
                 Date = x.InvoiceDate.ToString("yyyy MM dd"),
                 FreelanceWorkId = x.InvoiceUser.FreelanceWorkId,
-                Name = x.InvoiceUser.FirstName + " " + x.InvoiceUser.LastName,
+                Name = user.Name + " " + user.LastName,
+                NameWithInitials = $"{user.Name.First()}{user.LastName.First()}",
                 Products = x.Items.Select(x => new ItemDto(x)).ToList(),
-                NameWithInitials = x.InvoiceUser.FirstName.First() + ". " + x.InvoiceUser.LastName
+                UserVatCode = x.InvoiceUser.VatCode,
+                VatRate = VatRate
             })
             .FirstOrDefaultAsync();
         if (invoice == null) return null;
         var totalCost = invoice.Products.Sum(product => product.TotalPrice);
+
+        if(invoice.UserVatCode != null)
+        {
+            var pvm = (totalCost * (decimal)VatRate);
+            invoice.Pvm = pvm.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
+            invoice.TotalWithoutVat  = totalCost.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
+            totalCost += pvm;
+        }
+
         invoice.TotalMoney = totalCost.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
+
         invoice.SumInWords = itwc.ConvertSumToWords(totalCost);
+
         return invoice;
     }
 
@@ -90,7 +106,7 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
 
             throw;
         }
-        
+
 
         foreach (var itemPostDto in invoicePostDto.Items)
         {

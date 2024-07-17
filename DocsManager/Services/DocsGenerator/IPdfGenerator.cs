@@ -1,6 +1,6 @@
 using DocsManager.Models.Dto;
 
-namespace DocsManager.Utils.DocsGenerator;
+namespace DocsManager.Services.DocsGenerator;
 
 public interface IPdfGenerator
 {

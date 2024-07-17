@@ -90,9 +90,9 @@ public class ClientController(IClientService clientService) : ControllerWithUser
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteClient(int id)
     {
-        var userId = GetUserGuid();
+        var userId = GetCurrentUser();
         if (userId == null) NotFound();
-        var result = await clientService.DeleteClient(id, userId.Value);
+        var result = await clientService.DeleteClient(id, userId.Value.UserId);
         return result switch
         {
             ClientDeleteResult.Success => NoContent(),
