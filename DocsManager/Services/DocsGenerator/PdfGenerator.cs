@@ -134,12 +134,7 @@ public class PdfGenerator : IPdfGenerator
                             {
                                 return DefaultCellStyle(container.BorderTop(1));
                             }
-                            
-                            IContainer SumCellStyle(IContainer container)
-                            {
-                                return DefaultCellStyle(container.Border(1));
-                            }
-                            
+
 
                             table.ColumnsDefinition(columns =>
                             {
@@ -216,7 +211,13 @@ public class PdfGenerator : IPdfGenerator
                                         .Bold();
                                 });
                             }
-                            
+
+                            return;
+
+                            IContainer SumCellStyle(IContainer container)
+                            {
+                                return DefaultCellStyle(isVat ? container.Border(1) : container);
+                            }
                         });
                         column.Item().Row(row =>
                         {
@@ -229,20 +230,20 @@ public class PdfGenerator : IPdfGenerator
                             
                         });
 
-                        column.Item().Column(column =>
+                        column.Item().Column(columnDescriptor =>
                         {
-                            column.Item().Text("Sąskaitą išrašė: " + invoiceDto.Name).FontSize(6);
-                            column.Item().PaddingVertical(1).LineHorizontal(1).LineColor(Colors.Grey.Medium);
-                            column.Item()
+                            columnDescriptor.Item().Text("Sąskaitą išrašė: " + invoiceDto.Name).FontSize(6);
+                            columnDescriptor.Item().PaddingVertical(1).LineHorizontal(1).LineColor(Colors.Grey.Medium);
+                            columnDescriptor.Item()
                                 .Text(
                                     "(asmens, atsakingo už ūkinės operacijos atlikimą ir teisingą įforminimą, pareigos, vardas, pavardė, parašas)")
                                 .FontSize(6);
                         });
 
-                        column.Item().Column(column =>
+                        column.Item().Column(columnDescriptor =>
                         {
-                            column.Item().Text("Sąskaitą gavo:").FontSize(6);
-                            column.Item().PaddingVertical(1).LineHorizontal(1).LineColor(Colors.Grey.Medium);
+                            columnDescriptor.Item().Text("Sąskaitą gavo:").FontSize(6);
+                            columnDescriptor.Item().PaddingVertical(1).LineHorizontal(1).LineColor(Colors.Grey.Medium);
                         });
                     });
             })
