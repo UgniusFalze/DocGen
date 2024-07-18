@@ -216,7 +216,7 @@ public class PdfGenerator : IPdfGenerator
 
                             IContainer SumCellStyle(IContainer container)
                             {
-                                return DefaultCellStyle(isVat ? container.Border(1) : container);
+                                return DefaultCellStyle(isVat ? container.Border(1) : container.BorderTop(1));
                             }
                         });
                         column.Item().Row(row =>
