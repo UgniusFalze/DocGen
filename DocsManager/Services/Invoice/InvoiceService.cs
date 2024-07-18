@@ -190,7 +190,7 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!InvoiceExists(id))
+            if (!InvoiceExists(invoice.InvoiceId))
                 return false;
             throw;
         }
@@ -217,6 +217,58 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
     {
         var count = await context.Invoices.Where(invoice => invoice.InvoiceUserId == userId).CountAsync();
         return count;
+    }
+    
+    public async Task<Result> UpdateInvoice(InvoiceUpdatePost invoicePostDto, int invoiceId, Guid userId)
+    {
+        var invoice = await context.Invoices
+            .Where(invoice => invoice.SeriesNumber == invoiceId)
+            .Where(invoice => invoice.InvoiceUserId == userId)
+            .FirstOrDefaultAsync();
+        if (invoice == null) return Result.Fail("Invoice not found");
+        invoice.SeriesNumber = invoicePostDto.SeriesNumber;
+        invoice.InvoiceDate = DateTime.Parse(invoicePostDto.InvoiceDate).ToUniversalTime();
+        invoice.InvoiceClientId = invoicePostDto.InvoiceClientId;
+        context.Entry(invoice).State = EntityState.Modified;
+        
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            switch (ex)
+            {
+                case DbUpdateConcurrencyException when !InvoiceExists(invoice.InvoiceId):
+                    return Result.Fail("Invoice got deleted");
+                case DbUpdateConcurrencyException:
+                    throw;
+                case DbUpdateException:
+                {
+                    if (ex.InnerException is not PostgresException sqlException) throw;
+                    if(sqlException.SqlState == "23505")
+                    {
+                        return Result.Fail("Invoice with invoice number already exists");
+                    }
+
+                    break;
+                }
+            }
+
+            throw;
+        }
+
+        return Result.Ok();
+    }
+    
+    public async Task<Result<Models.Invoice>> GetShortInvoice(int id, Guid userId)
+    {
+        var invoice = await context.Invoices
+            .Where(invoice => invoice.InvoiceUserId == userId)
+            .Where(invoice => invoice.SeriesNumber == id)
+            .FirstOrDefaultAsync();
+        if (invoice == null) return Result.Fail("Invoice not found");
+        return Result.Ok(invoice);
     }
 
     private bool InvoiceExists(int id)

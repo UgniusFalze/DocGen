@@ -6,7 +6,7 @@ public class LithuanianIntegerToWords : IntegerToWordsConverter
 {
     public string ConvertSumToWords(decimal sum)
     {
-        var integral = (int)sum;
+        var integral = (long)sum;
         var fractionPart = (int)(sum % 1.0m * 100);
         var cents = "0 ct.";
         var euros = "0 eurų";
@@ -42,7 +42,7 @@ public class LithuanianIntegerToWords : IntegerToWordsConverter
         return char.ToUpper(result[0]) + result.Substring(1);
     }
 
-    private static string ConvertIntegerToWords(int integer)
+    private static string ConvertIntegerToWords(long integer)
     {
         var result = new StringBuilder();
         if (integer > 1999)

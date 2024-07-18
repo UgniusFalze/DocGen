@@ -150,6 +150,53 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         var result = await invoiceService.SetPayed(id, isPayed, user.Value.UserId);
         return result ? NoContent() : NotFound("Invoice not found");
     }
+    
+    /// <summary>
+    /// Updates invoice
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="post"></param>
+    /// <returns></returns>
+    /// <response code="204">Invoice updated successfully</response>
+    /// <response code="422">If invoice with number exists</response>
+    /// <response code="404">If user or invoice is not found</response>
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateInvoice(int id, InvoiceUpdatePost post)
+    {
+        var user = GetCurrentUser();
+        if (user == null) return NotFound("User not found");
+        var result = await invoiceService.UpdateInvoice(post, id, user.Value.UserId);
+        if(result.IsFailed)
+        {
+            return result.Errors.First().Message switch
+            {
+                "User or client does not exist" => NotFound("Invoice not found"),
+                "Invoice got deleted" => NotFound("Invoice not found"),
+                "Invoice with invoice number already exists" => UnprocessableEntity(
+                    "Invoice with invoice number already exists"),
+                _ => Problem("Error")
+            };
+        }
+        
+        return NoContent();
+    }
+    
+    /// <summary>
+    /// Gets invoice without any items
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>Invoice from id</returns>
+    /// <response code="200">Returns invoice from id</response>
+    /// <response code="404">If invoice not found</response>
+    [HttpGet("shortInvoice/{id}")]
+    public async Task<ActionResult<Models.Invoice>> GetShortInvoice(int id)
+    {
+        var user = GetCurrentUser();
+        if (user == null) return NotFound("User not found");
+        var result = await invoiceService.GetShortInvoice(id, user.Value.UserId);
+        if(result.IsFailed) return NotFound(result.Errors.First().Message);
+        return Ok(result.Value);
+    }
 
     /// <summary>
     ///     Gets user invoices count

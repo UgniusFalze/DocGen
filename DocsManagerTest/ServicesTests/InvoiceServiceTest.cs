@@ -4,6 +4,7 @@ using DocsManager.Models.Dto;
 using DocsManager.Services.IntegerToWordsConverter;
 using DocsManager.Services.Invoice;
 using DocsManager.Services.User;
+using FluentResults;
 
 namespace DocGenLibaryTest.ServicesTests;
 
@@ -191,6 +192,25 @@ public class InvoiceServiceTest : BaseTest
         var service = GetService();
         var result = await service.RemoveItemFromInvoice(id, invoiceItemId, guid);
         Assert.That(result, Is.EqualTo(expectedResult));
+    }
+    
+    [Test]
+    [NonParallelizable]
+    [TestCase(1, "40cf7e27-5de2-4251-b030-9e0335803c58", "2024-06-17", 1, 6)]
+    [TestCase(2, "e255553a-1ce4-4f32-9c56-276b24096a4e", "2024-12-31", 4, 3)]
+    public async Task Test_Updates_Invoice(int invoiceId, string userId, string invoiceDate, int clientId, int seriesNumber)
+    {
+        var guid = Guid.Parse(userId);
+        var service = GetService();
+        var post = new InvoiceUpdatePost(){InvoiceClientId = clientId, InvoiceDate = invoiceDate, SeriesNumber = seriesNumber};
+        var result = await service.UpdateInvoice(post, invoiceId, guid);
+        Assert.That(result.IsSuccess, Is.True);
+        var updated = await service.GetInvoice(seriesNumber, new BearerUser(guid,"test", "test"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(updated.SeriesNumber, Is.EqualTo(seriesNumber));
+            Assert.That(updated.Date, Is.EqualTo(DateTime.Parse(invoiceDate).ToUniversalTime().ToString("yyyy MM dd")));
+        });
     }
 
     private InvoiceService GetService()
