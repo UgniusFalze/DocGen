@@ -23,7 +23,7 @@ public class UserService(DocsManagementContext context) : IUserService
             FreelanceWorkId = userPost.FreelanceWorkId,
             PersonalId = userPost.PersonalId,
             UserId = userId,
-            VatCode = userPost.VatCode == "" ? null : userPost.VatCode,
+            VatCode = userPost.VatCode == "" ? null : userPost.VatCode
         });
 
         await context.SaveChangesAsync();
@@ -40,7 +40,7 @@ public class UserService(DocsManagementContext context) : IUserService
             BankNumber = userPost.BankNumber,
             FreelanceWorkId = userPost.FreelanceWorkId,
             PersonalId = userPost.PersonalId,
-            VatCode = userPost.VatCode == "" ? null : userPost.VatCode,
+            VatCode = userPost.VatCode == "" ? null : userPost.VatCode
         };
 
         context.Entry(modifiedUser).State = EntityState.Modified;

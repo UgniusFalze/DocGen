@@ -2,6 +2,7 @@ using System.Globalization;
 using DocsManager.Controllers.Types;
 using DocsManager.Models;
 using DocsManager.Models.Dto;
+using DocsManager.Services.Errors;
 using DocsManager.Services.User;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,10 @@ using Npgsql;
 
 namespace DocsManager.Services.Invoice;
 
-public class InvoiceService(DocsManagementContext context, IntegerToWordsConverter.IntegerToWordsConverter itwc, IUserService userService)
+public class InvoiceService(
+    DocsManagementContext context,
+    IntegerToWordsConverter.IntegerToWordsConverter itwc,
+    IUserService userService)
     : IInvoiceService
 {
     private const int InvoicePageSize = 10;
@@ -63,11 +67,11 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
         if (invoice == null) return null;
         var totalCost = invoice.Products.Sum(product => product.TotalPrice);
 
-        if(invoice.UserVatCode != null)
+        if (invoice.UserVatCode != null)
         {
-            var pvm = (totalCost * (decimal)VatRate);
+            var pvm = totalCost * (decimal)VatRate;
             invoice.Pvm = pvm.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
-            invoice.TotalWithoutVat  = totalCost.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
+            invoice.TotalWithoutVat = totalCost.ToString("N2", CultureInfo.CreateSpecificCulture("lt-LT"));
             totalCost += pvm;
         }
 
@@ -82,7 +86,7 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
     {
         var userModel = await context.Users.FindAsync(userId);
         var clientModel = await context.Clients.FindAsync(invoicePostDto.ClientId);
-        if (userModel == null || clientModel == null) return Result.Fail("User or client does not exist");
+        if (userModel == null || clientModel == null) return Result.Fail(new NotFoundError("User or client"));
 
         var invoice = new Models.Invoice
         {
@@ -99,10 +103,7 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
         catch (DbUpdateException ex)
         {
             if (ex.InnerException is not PostgresException sqlException) throw;
-            if(sqlException.SqlState == "23505")
-            {
-                return Result.Fail("Invoice with invoice number already exists");
-            }
+            if (sqlException.SqlState == "23505") return Result.Fail(new DuplicationError("Invoice", "series number"));
 
             throw;
         }
@@ -218,19 +219,19 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
         var count = await context.Invoices.Where(invoice => invoice.InvoiceUserId == userId).CountAsync();
         return count;
     }
-    
+
     public async Task<Result> UpdateInvoice(InvoiceUpdatePost invoicePostDto, int invoiceId, Guid userId)
     {
         var invoice = await context.Invoices
             .Where(invoice => invoice.SeriesNumber == invoiceId)
             .Where(invoice => invoice.InvoiceUserId == userId)
             .FirstOrDefaultAsync();
-        if (invoice == null) return Result.Fail("Invoice not found");
+        if (invoice == null) return Result.Fail(new NotFoundError("Invoice"));
         invoice.SeriesNumber = invoicePostDto.SeriesNumber;
         invoice.InvoiceDate = DateTime.Parse(invoicePostDto.InvoiceDate).ToUniversalTime();
         invoice.InvoiceClientId = invoicePostDto.InvoiceClientId;
         context.Entry(invoice).State = EntityState.Modified;
-        
+
         try
         {
             await context.SaveChangesAsync();
@@ -246,10 +247,8 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
                 case DbUpdateException:
                 {
                     if (ex.InnerException is not PostgresException sqlException) throw;
-                    if(sqlException.SqlState == "23505")
-                    {
-                        return Result.Fail("Invoice with invoice number already exists");
-                    }
+                    if (sqlException.SqlState == "23505")
+                        return Result.Fail(new DuplicationError("Invoice", "series number"));
 
                     break;
                 }
@@ -260,7 +259,7 @@ public class InvoiceService(DocsManagementContext context, IntegerToWordsConvert
 
         return Result.Ok();
     }
-    
+
     public async Task<Result<Models.Invoice>> GetShortInvoice(int id, Guid userId)
     {
         var invoice = await context.Invoices

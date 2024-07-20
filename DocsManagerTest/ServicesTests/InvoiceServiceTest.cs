@@ -1,10 +1,10 @@
 using System.Globalization;
 using DocsManager.Controllers.Types;
 using DocsManager.Models.Dto;
+using DocsManager.Services.Errors;
 using DocsManager.Services.IntegerToWordsConverter;
 using DocsManager.Services.Invoice;
 using DocsManager.Services.User;
-using FluentResults;
 
 namespace DocGenLibaryTest.ServicesTests;
 
@@ -42,7 +42,8 @@ public class InvoiceServiceTest : BaseTest
     [Test]
     [NonParallelizable]
     [TestCase(4, "40cf7e27-5de2-4251-b030-9e0335803c58", "0,09", "In the test container")]
-    [TestCase(2, "e255553a-1ce4-4f32-9c56-276b24096a4e", "6,05", "In the real world", Description = "User with vat code")]
+    [TestCase(2, "e255553a-1ce4-4f32-9c56-276b24096a4e", "6,05", "In the real world",
+        Description = "User with vat code")]
     public async Task Test_Gets_Invoice_With_Id_And_User(int id, string userId, string totalMoney, string address)
     {
         var guid = Guid.Parse(userId);
@@ -115,8 +116,42 @@ public class InvoiceServiceTest : BaseTest
         var service = GetService();
         var result = await service.InsertInvoice(invoicePost, guid);
         Assert.That(result.IsFailed, Is.True);
-        Assert.That(result.Errors.First().Message, Is.EqualTo("User or client does not exist"));
+        var error = result.Errors.First();
+        var expectedError = new NotFoundError("User or client");
+        Assert.Multiple(() =>
+            {
+                Assert.That(error.Message, Is.EqualTo(expectedError.Message));
+                Assert.That(error.Metadata, Is.EqualTo(expectedError.Metadata));
+            }
+        );
     }
+
+    [Test]
+    [NonParallelizable]
+    [TestCase("e255553a-1ce4-4f32-9c56-276b24096a4e", 1, 1)]
+    [TestCase("40cf7e27-5de2-4251-b030-9e0335803c58", 1, 1)]
+    public async Task Test_Invoice_Insert_Returns_Duplication_On_Duplicate(string userId, int clientId,
+        int seriesNumber)
+    {
+        var invoicePost = new InvoicePostDto
+        {
+            ClientId = clientId, InvoiceDate = DateTime.Now.ToString(CultureInfo.CurrentCulture),
+            SeriesNumber = seriesNumber, Items = new List<ItemPostDto>()
+        };
+        var guid = Guid.Parse(userId);
+        var service = GetService();
+        var result = await service.InsertInvoice(invoicePost, guid);
+        Assert.That(result.IsFailed, Is.True);
+        var error = result.Errors.First();
+        var expectedError = new DuplicationError("Invoice", "series number");
+        Assert.Multiple(() =>
+            {
+                Assert.That(error.Message, Is.EqualTo(expectedError.Message));
+                Assert.That(error.Metadata, Is.EqualTo(expectedError.Metadata));
+            }
+        );
+    }
+
 
     [Test]
     [NonParallelizable]
@@ -193,19 +228,21 @@ public class InvoiceServiceTest : BaseTest
         var result = await service.RemoveItemFromInvoice(id, invoiceItemId, guid);
         Assert.That(result, Is.EqualTo(expectedResult));
     }
-    
+
     [Test]
     [NonParallelizable]
     [TestCase(1, "40cf7e27-5de2-4251-b030-9e0335803c58", "2024-06-17", 1, 6)]
     [TestCase(2, "e255553a-1ce4-4f32-9c56-276b24096a4e", "2024-12-31", 4, 3)]
-    public async Task Test_Updates_Invoice(int invoiceId, string userId, string invoiceDate, int clientId, int seriesNumber)
+    public async Task Test_Updates_Invoice(int invoiceId, string userId, string invoiceDate, int clientId,
+        int seriesNumber)
     {
         var guid = Guid.Parse(userId);
         var service = GetService();
-        var post = new InvoiceUpdatePost(){InvoiceClientId = clientId, InvoiceDate = invoiceDate, SeriesNumber = seriesNumber};
+        var post = new InvoiceUpdatePost
+            { InvoiceClientId = clientId, InvoiceDate = invoiceDate, SeriesNumber = seriesNumber };
         var result = await service.UpdateInvoice(post, invoiceId, guid);
         Assert.That(result.IsSuccess, Is.True);
-        var updated = await service.GetInvoice(seriesNumber, new BearerUser(guid,"test", "test"));
+        var updated = await service.GetInvoice(seriesNumber, new BearerUser(guid, "test", "test"));
         Assert.Multiple(() =>
         {
             Assert.That(updated.SeriesNumber, Is.EqualTo(seriesNumber));

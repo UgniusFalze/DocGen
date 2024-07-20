@@ -13,22 +13,22 @@ public class PdfGenerator : IPdfGenerator
         var document = CreateDocument(invoiceDto);
         return document.GeneratePdf();
     }
-    
+
     private void CreateHeader(PageDescriptor header, int seriesNumber, string initials, bool isVat)
-    {   
+    {
         var pvm = isVat ? "PVM" : string.Empty;
         var topText = $"{initials.ToUpper()}{pvm}";
         header
             .Header()
             .Text(x =>
-        {
-            x.DefaultTextStyle(style => style.FontSize(10));
-            x.AlignCenter();
-            x.Line("SĄSKAITA FAKTŪRA");
-            x.Span("Serija ");
-            x.Span(topText).Bold();
-            x.Line(" Nr. " + seriesNumber);
-        });
+            {
+                x.DefaultTextStyle(style => style.FontSize(10));
+                x.AlignCenter();
+                x.Line("SĄSKAITA FAKTŪRA");
+                x.Span("Serija ");
+                x.Span(topText).Bold();
+                x.Line(" Nr. " + seriesNumber);
+            });
     }
 
     private IDocument CreateDocument(InvoiceDto invoiceDto)
@@ -69,19 +69,16 @@ public class PdfGenerator : IPdfGenerator
                                 sellerColumn
                                     .Item()
                                     .Text("Asmens kodas: " + invoiceDto.PersonalId);
-                               
-                                if(isVat)
-                                {
+
+                                if (isVat)
                                     sellerColumn
                                         .Item()
                                         .Text("PVM mokėtojo kodas: " + invoiceDto.UserVatCode);
-                                }
-                                else{
+                                else
                                     sellerColumn
                                         .Item()
                                         .Text("Ne PVM mokėtojas");
-                                }
-                                
+
                                 sellerColumn
                                     .Item()
                                     .Text("Veikiantis pagal individualios veiklos vykdymo pažymą");
@@ -117,8 +114,8 @@ public class PdfGenerator : IPdfGenerator
                                         .Text("Įmonės PVM kodas: " + invoiceDto.VatCode);
                             });
                         });
-                        
-                        
+
+
                         column.Item().BorderTop(2).BorderBottom(isVat ? 0 : 1).Table(table =>
                         {
                             IContainer DefaultCellStyle(IContainer container)
@@ -169,8 +166,8 @@ public class PdfGenerator : IPdfGenerator
                                     .Text((invoiceDto.Products[i].PriceOfUnit * invoiceDto.Products[i].Units).ToString(
                                         "N2", CultureInfo.CreateSpecificCulture("lt-LT")));
                             }
-                            if(isVat)
-                            {
+
+                            if (isVat)
                                 table.Footer(footer =>
                                 {
                                     footer.Cell().ColumnSpan(4).BorderTop(1);
@@ -210,7 +207,6 @@ public class PdfGenerator : IPdfGenerator
                                         .Text(invoiceDto.TotalMoney)
                                         .Bold();
                                 });
-                            }
 
                             return;
 
@@ -222,12 +218,9 @@ public class PdfGenerator : IPdfGenerator
                         column.Item().Row(row =>
                         {
                             row.RelativeItem().Text("Suma žodžiais: " + invoiceDto.SumInWords);
-                            if(!isVat)
-                            {
+                            if (!isVat)
                                 row.RelativeItem().AlignRight().Text("Suma iš viso:  " + invoiceDto.TotalMoney + " EUR")
-                                .Bold();
-                            }
-                            
+                                    .Bold();
                         });
 
                         column.Item().Column(columnDescriptor =>

@@ -11,7 +11,7 @@ public interface IInvoiceService
     public Task<int> GetInvoiceCount(Guid userId);
 
     public Task<InvoiceDto?> GetInvoice(int id, BearerUser user);
-    
+
     public Task<Result<Models.Invoice>> GetShortInvoice(int id, Guid user);
 
     public Task<Result<Models.Invoice>> InsertInvoice(InvoicePostDto invoicePostDto, Guid userId);
@@ -25,6 +25,6 @@ public interface IInvoiceService
     public Task<bool> SetPayed(int id, IsPayedDto isPayed, Guid userId);
 
     public Task<bool> RemoveItemFromInvoice(int invoiceId, int itemId, Guid userId);
-    
+
     public Task<Result> UpdateInvoice(InvoiceUpdatePost invoiceUpdatePost, int invoiceId, Guid userId);
 }

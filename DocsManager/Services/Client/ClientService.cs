@@ -1,7 +1,6 @@
 using DocsManager.Models;
 using DocsManager.Models.Dto;
 using FluentResults;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -36,27 +35,26 @@ public class ClientService(DocsManagementContext context) : IClientService
 
     public async Task<Result<Models.Client>> InsertClient(Models.Client client)
     {
-        client.VatCode  = client.VatCode == "" ? null : client.VatCode;
+        client.VatCode = client.VatCode == "" ? null : client.VatCode;
         context.Clients.Add(client);
         try
         {
             await context.SaveChangesAsync();
-        }catch(DbUpdateException ex){
+        }
+        catch (DbUpdateException ex)
+        {
             if (ex.InnerException is not PostgresException sqlException) throw;
-            if(sqlException.SqlState == "23505")
-            {
-                return Result.Fail("Client with id already exists");
-            }
+            if (sqlException.SqlState == "23505") return Result.Fail("Client with id already exists");
 
             throw;
         }
-        
+
         return client;
     }
 
     public async Task<bool> UpdateClient(Models.Client client)
     {
-        client.VatCode  = client.VatCode == "" ? null : client.VatCode;
+        client.VatCode = client.VatCode == "" ? null : client.VatCode;
         context.Entry(client).State = EntityState.Modified;
 
         try
@@ -89,13 +87,13 @@ public class ClientService(DocsManagementContext context) : IClientService
         return ClientDeleteResult.Success;
     }
 
-    public bool ClientExists(int id)
-    {
-        return context.Clients.Any(e => e.ClientId == id);
-    }
-
     public async Task<int> GetClientCount()
     {
         return await context.Clients.CountAsync();
+    }
+
+    public bool ClientExists(int id)
+    {
+        return context.Clients.Any(e => e.ClientId == id);
     }
 }
