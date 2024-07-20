@@ -21,6 +21,6 @@ public class InvoiceDto
     public string TotalMoney { get; set; }
     public double VatRate { get; set; }
     public string? Pvm { get; set; }
-    
+
     public string? TotalWithoutVat { get; set; }
 }

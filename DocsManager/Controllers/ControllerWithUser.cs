@@ -8,12 +8,12 @@ namespace DocsManager.Controllers;
 [Authorize]
 public abstract class ControllerWithUser : ControllerBase
 {
-    protected BearerUser? GetCurrentUser() 
+    protected BearerUser? GetCurrentUser()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var firstName = User.FindFirstValue(ClaimTypes.GivenName);
         var lastName = User.FindFirstValue(ClaimTypes.Surname);
-        if(userId == null || firstName == null || lastName == null) return null;
+        if (userId == null || firstName == null || lastName == null) return null;
         return new BearerUser(Guid.Parse(userId), firstName, lastName);
     }
 }

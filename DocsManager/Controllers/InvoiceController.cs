@@ -1,5 +1,6 @@
 using DocsManager.Models;
 using DocsManager.Models.Dto;
+using DocsManager.Services.Errors;
 using DocsManager.Services.Invoice;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,18 +56,15 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         var user = GetCurrentUser();
         if (user == null) return NotFound("User not found");
         var result = await invoiceService.InsertInvoice(invoicePost, user.Value.UserId);
-        if(result.IsFailed)
-        {
-            return result.Errors.First().Message switch
+        if (result.IsFailed)
+            return result.Errors.First().Metadata.First().Value switch
             {
-                "User or client does not exist" => NotFound("User or client does not exist"),
-                "Invoice with invoice number already exists" => UnprocessableEntity(
+                DuplicationResultCode.NotFound => NotFound("User or client does not exist"),
+                DuplicationResultCode.Duplication => UnprocessableEntity(
                     "Invoice with invoice number already exists"),
                 _ => Problem("Error")
             };
-        }else{
-            return Ok(result.Value);
-        }
+        return Ok(result.Value);
     }
 
     /// <summary>
@@ -150,9 +148,9 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         var result = await invoiceService.SetPayed(id, isPayed, user.Value.UserId);
         return result ? NoContent() : NotFound("Invoice not found");
     }
-    
+
     /// <summary>
-    /// Updates invoice
+    ///     Updates invoice
     /// </summary>
     /// <param name="id"></param>
     /// <param name="post"></param>
@@ -166,35 +164,32 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerWithU
         var user = GetCurrentUser();
         if (user == null) return NotFound("User not found");
         var result = await invoiceService.UpdateInvoice(post, id, user.Value.UserId);
-        if(result.IsFailed)
-        {
-            return result.Errors.First().Message switch
+        if (result.IsFailed)
+            return result.Errors.First().Metadata.First().Value switch
             {
-                "User or client does not exist" => NotFound("Invoice not found"),
-                "Invoice got deleted" => NotFound("Invoice not found"),
-                "Invoice with invoice number already exists" => UnprocessableEntity(
+                DuplicationResultCode.NotFound => NotFound("Invoice does not exist"),
+                DuplicationResultCode.Duplication => UnprocessableEntity(
                     "Invoice with invoice number already exists"),
                 _ => Problem("Error")
             };
-        }
-        
+
         return NoContent();
     }
-    
+
     /// <summary>
-    /// Gets invoice without any items
+    ///     Gets invoice without any items
     /// </summary>
     /// <param name="id"></param>
     /// <returns>Invoice from id</returns>
     /// <response code="200">Returns invoice from id</response>
     /// <response code="404">If invoice not found</response>
     [HttpGet("shortInvoice/{id}")]
-    public async Task<ActionResult<Models.Invoice>> GetShortInvoice(int id)
+    public async Task<ActionResult<Invoice>> GetShortInvoice(int id)
     {
         var user = GetCurrentUser();
         if (user == null) return NotFound("User not found");
         var result = await invoiceService.GetShortInvoice(id, user.Value.UserId);
-        if(result.IsFailed) return NotFound(result.Errors.First().Message);
+        if (result.IsFailed) return NotFound(result.Errors.First().Message);
         return Ok(result.Value);
     }
 

@@ -8,6 +8,6 @@ public class User
     public string FreelanceWorkId { get; set; }
     public string BankNumber { get; set; }
     public string BankName { get; set; }
-    
-    public string? VatCode { get; set; } 
+
+    public string? VatCode { get; set; }
 }
