@@ -1,0 +1,17 @@
+name: Test
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  nunit:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:8.0
+    timeout-minutes: 60
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+    - run: dotnet test
+
