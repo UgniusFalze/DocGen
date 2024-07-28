@@ -1,5 +1,5 @@
 # DocGen
-Backend application to be used with [invoice management website](https://gitlab.com/personal6195204/docgenui).
+Backend application to be used with [invoice management website](https://github.com/UgniusFalze/DocGenUI).
 
 ## Requirements
 - [Keycloak](https://www.keycloak.org/) identity server
